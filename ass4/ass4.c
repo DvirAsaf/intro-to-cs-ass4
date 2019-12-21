@@ -149,26 +149,19 @@ int checkValidRook(char board[][SIZE],Move move)
 
         if(result == 'L')
         {
-            //check for the next step if the place is empty
-//            for (int i = 0; i < steps ; i++)
-//            {
-//                if(!(isEmpty(board[SIZE][SIZE],move.iSrc,move.jSrc-k)))
-//                    return 0;
-//                k++;
-//            }
-            for (int i = move.jSrc-1; i >=move.jDest ; i--) {
+            for (int i = move.jSrc-1; i >=move.jDest ; i--)
+            {
                 if(!(isEmpty(board,move.iSrc,i)))
                     return 0;
 
             }
-        } else
-        {//GO RIGHT
+        } else {//GO RIGHT
             //check for the next step if the place is empty
-            for (int i = move.jSrc+1; i <= move.jDest ; i++)
-            {
-                if(!(isEmpty(board,move.iSrc,i)))
+            for (int i = move.jSrc + 1; i <= move.jDest; i++) {
+                if (!(isEmpty(board, move.iSrc, i)))
                     return 0;
             }
+        }
     }
     //if walking in the same col
     if(move.iSrc != move.iDest)
@@ -193,7 +186,7 @@ int checkValidRook(char board[][SIZE],Move move)
                         return 0;
                 }
             }
-        }
+    }
     return 1;
 }
 
@@ -711,7 +704,7 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
 ////if the move is legal return 1 if not return 0.
 //
 //}
-//void printBoardFromFEN(char fen[]){}
+void printBoardFromFEN(char fen[]){}
 
 
 
