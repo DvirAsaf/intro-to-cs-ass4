@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -92,7 +93,7 @@ int checkValidPawn(char board[][SIZE],Move move)
         // if white double step is allowed only from second row
         if(move.isWhite && move.iSrc != SIZE-2)
             return 0;
-        // if black double step is allowed only from second row
+            // if black double step is allowed only from second row
         else if(!move.isWhite && move.iSrc != 1)
             return 0;
     }
@@ -111,7 +112,6 @@ int checkValidPawn(char board[][SIZE],Move move)
 
     return 1;
 }
-
 
 int checkValidCapture(char board[][SIZE],Move move)
 {
@@ -140,8 +140,6 @@ int checkValidCapture(char board[][SIZE],Move move)
         return 1;
     }
 }
-
-
 
 int isLastRow(char board[][SIZE],Move move)
 {
@@ -174,13 +172,13 @@ void createBoard(char board[][SIZE], char fen[])
     {
         if (cureDigit == '/')
         {
-           i++;
-           j=0;
+            i++;
+            j=0;
         }
         else if('0' <= cureDigit && cureDigit <= '9')
         {
             int numOfSpace = (cureDigit - '0');
-            for (int l = 0; l < cureDigit; l++)
+            for (int l = 0; l < numOfSpace; l++)
             {
                 board[i][j] = EMPTY;
                 j++;
@@ -195,7 +193,7 @@ void createBoard(char board[][SIZE], char fen[])
         cureDigit = fen[k];
     }
 //    for (int i = 0; i < SIZE; ++i) {
-        //print all row
+    //print all row
 //        for (int j = 0; j < SIZE; ++j) {
 //            printf("%c",board[i][j]);
 //        }
@@ -301,7 +299,7 @@ char whichPromoion(char pgn[])
             cure= pgn[i];
             return cure;
         }
-}
+    }
     //never reach here
     return cure;
 }
@@ -486,6 +484,7 @@ char findDstRow(char pgn[],int isSrcRow)
  * also it checks the case of a pawn that in last row and there is no promotion which is
  * also not valid
  */
+
 int checkValidPromotion(char board[][SIZE],Move move) {
     if(move.isPromotion){
         //validate the player is pawn in last raw.
@@ -497,7 +496,7 @@ int checkValidPromotion(char board[][SIZE],Move move) {
     } else{
         if(isLastRow(board,move) && move.player==PAWN)
             return 0;
-        //if it is pawn not in last row it is ok, or other player in last row also ok
+            //if it is pawn not in last row it is ok, or other player in last row also ok
         else
             return 1;
     }
@@ -507,6 +506,7 @@ int isValidMove(char board[][SIZE], Move move){
     if(move.player == PAWN){
         if(checkValidPawn(board,move) == 0)
             return  0;
+
     }
 
     if(checkValidCapture(board,move) == 0)
@@ -608,15 +608,15 @@ int isClear(char board[][SIZE],char piece,Location loc)
     if (target!= EMPTY )
     {
         //White piece cant eats friend
-       if(isupper(target)&&isupper(piece))
-       {
-           return 0;
+        if(isupper(target)&&isupper(piece))
+        {
+            return 0;
 
-           //Black piece cant eats friend
-       } else if(islower(target)&& islower(piece))
-       {
-           return 0;
-       } else return 2;
+            //Black piece cant eats friend
+        } else if(islower(target)&& islower(piece))
+        {
+            return 0;
+        } else return 2;
     }
     return 1;
 }
