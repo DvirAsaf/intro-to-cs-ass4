@@ -91,6 +91,12 @@ int checkDifferentColors(char board[][SIZE],Move move)
     } else return 1;
 }
 
+int checkValidQueen(char board[][SIZE],Move move)
+{
+    int stepsRow = abs(move.jSrc - move.jDest);
+    int stepsCol = abs(move.iSrc - move.jDest);
+}
+
 int checkValidKnight(char board[][SIZE],Move move)
 {
     //if walking more than 2 step in the same row
@@ -134,6 +140,73 @@ int checkValidKnight(char board[][SIZE],Move move)
     return 1;
 }
 
+int checkValidBishop(char board[][SIZE],Move move)
+{
+    //number of steps that the player move in diagonal line
+    int steps = abs(move.iSrc - move.iDest);
+    //if the player do not move in diagonal line
+    if (abs(move.iSrc - move.iDest) != abs(move.jSrc - move.jDest))
+        return 0;
+    // char side that tell me witch side the player move
+    char side;
+    side = move.jSrc > move.jDest ? 'L' : 'R';
+    // char side that tell me witch side the player move
+    char direction;
+    direction = move.iSrc > move.iDest ? 'U' : 'D';
+    // i == src row and j== src col
+    int i = move.iSrc;
+    int j = move.jSrc;
+    //the player move left and up in diagonal line, and check that of the way is free (empty) if not error!
+    if (side == 'L' && direction == 'U') {
+        {
+            i = i - 1;
+            j = j - 1;
+            for (int k = 0; k < steps; ++k) {
+                if (!isEmpty(board, i, j))
+                    return 0;
+                i--;
+                j--;
+            }
+        }
+    }
+    //the player move right and up in diagonal line, and check that of the way is free (empty) if not error!
+    else if (side == 'R' && direction == 'U') {
+        i = i - 1;
+        j = j + 1;
+        for (int k = 0; k < steps; k++) {
+            if (!isEmpty(board, i, j))
+                return 0;
+            i--;
+            j++;
+        }
+    }
+    //the player move left and down in diagonal line, and check that of the way is free (empty) if not error!
+    else if (side == 'L' && direction == 'D') {
+        {
+            i = i + 1;
+            j = j - 1;
+            for (int k = 0; k < steps; ++k) {
+                if (!isEmpty(board, i, j))
+                    return 0;
+                i++;
+                j--;
+            }
+        }
+    }
+    //the player move right and down in diagonal line, and check that of the way is free (empty) if not error!
+    else if (side == 'R' && direction == 'D') {
+        i = i + 1;
+        j = j + 1;
+        for (int k = 0; k < steps; ++k) {
+            if (!isEmpty(board, i, j))
+                return 0;
+            i++;
+            j++;
+        }
+    }
+    return 1;
+}
+
 int checkValidRook(char board[][SIZE],Move move)
 {
     // if walking not in the same row or the same col
@@ -143,7 +216,6 @@ int checkValidRook(char board[][SIZE],Move move)
     //if walking in the same row
     if(move.jSrc != move.jDest)
     {
-
         //check witch direction the player move L==left and R== right
         char result = move.jSrc > move.jDest ? 'L':'R';
 
@@ -153,7 +225,6 @@ int checkValidRook(char board[][SIZE],Move move)
             {
                 if(!(isEmpty(board,move.iSrc,i)))
                     return 0;
-
             }
         } else {//GO RIGHT
             //check for the next step if the place is empty
@@ -257,8 +328,6 @@ int isLastRow(char board[][SIZE],Move move)
     else
         return 0;
 }
-
-
 
 int isDigit(char digit)
 {
@@ -613,6 +682,14 @@ int isValidMove(char board[][SIZE], Move move){
         if(checkValidPawn(board,move) == 0)
             return  0;
 
+    } else if(move.player == ROOK)
+    {
+        if(checkValidRook(board,move) == 0)
+            return 0;
+    }else if(move.player == KNIGHT)
+    {
+        if(checkValidKnight(board,move) == 0)
+            return 0;
     }
 
     if(checkValidCapture(board,move) == 0)
@@ -656,6 +733,84 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
     }
 
 }
+
+
+void printBoardFromFEN(char fen[]){}
+
+int isClear(char board[][SIZE],char piece,Location loc)
+{
+    char target = (board[loc.row][loc.col]);
+    if (target!= EMPTY )
+    {
+        //White piece cant eats friend
+        if(isupper(target)&&isupper(piece))
+        {
+            return 0;
+
+            //Black piece cant eats friend
+        } else if(islower(target)&& islower(piece))
+        {
+            return 0;
+        } else return 2;
+    }
+    return 1;
+}
+int isMove(char board[][SIZE],char piece,Location src, Location dest)
+{
+    if (isClear(board,piece,dest))
+    {
+        if(piece=='P')
+        {
+            if (src.col==dest.col)
+            {
+                if(dest.row-src.row==1)
+                {
+                    return 1;
+                }
+            } else if ((dest.row-src.row==2)&& src.row==1)
+            {
+                return 1;
+            } else return 0;
+        }
+    }
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
 //{
@@ -704,45 +859,3 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
 ////if the move is legal return 1 if not return 0.
 //
 //}
-void printBoardFromFEN(char fen[]){}
-
-
-
-int isClear(char board[][SIZE],char piece,Location loc)
-{
-    char target = (board[loc.row][loc.col]);
-    if (target!= EMPTY )
-    {
-        //White piece cant eats friend
-        if(isupper(target)&&isupper(piece))
-        {
-            return 0;
-
-            //Black piece cant eats friend
-        } else if(islower(target)&& islower(piece))
-        {
-            return 0;
-        } else return 2;
-    }
-    return 1;
-}
-int isMove(char board[][SIZE],char piece,Location src, Location dest)
-{
-    if (isClear(board,piece,dest))
-    {
-        if(piece=='P')
-        {
-            if (src.col==dest.col)
-            {
-                if(dest.row-src.row==1)
-                {
-                    return 1;
-                }
-            } else if ((dest.row-src.row==2)&& src.row==1)
-            {
-                return 1;
-            } else return 0;
-        }
-    }
-    return 0;
-}
