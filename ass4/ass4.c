@@ -8,6 +8,9 @@
 #include "ass4.h"
 #define SIZE 8
 
+//#define LEFT 'L'
+//#define RIGHT 'RIGHT'
+
 // PGN characters
 const char PAWN = 'P';
 const char ROOK = 'R';
@@ -64,6 +67,13 @@ typedef struct
 
 }piece;
 
+int isEmpty(char board[][SIZE],int row, int col){
+    if(board[row][col] == EMPTY)
+        return 1;
+    else
+        return 0;
+}
+
 int checkDifferentColors(char board[][SIZE],Move move)
 {
     char srcPlayer = board[move.iSrc][move.jSrc];
@@ -79,6 +89,112 @@ int checkDifferentColors(char board[][SIZE],Move move)
         return 0;
         //White player can capture black player
     } else return 1;
+}
+
+int checkValidKnight(char board[][SIZE],Move move)
+{
+    //if walking more than 2 step in the same row
+    if(abs(move.iSrc - move.iDest) > 2)
+        return 0;
+
+    //if walking more than 2 step in the same col
+    if(abs(move.jSrc - move.jDest) > 2)
+        return 0;
+
+    //If none of them walked 2 steps it is an ERROR !
+    if(!(abs(move.jSrc-move.jDest)==2 || abs(move.iSrc - move.iDest) == 2)){
+        return 0;
+    }
+
+    //if walking 2 step in the same row and walking more than 1 step in col
+    if(abs(move.iSrc - move.iDest) == 2)
+    {
+        if(abs(move.jSrc - move.jDest) != 1)
+            return 0;
+    }
+
+    //if walking 2 step in the same col and walking more than 1 step in row
+    if(abs(move.jSrc - move.jDest) == 2)
+    {
+        if(abs(move.iSrc - move.iDest) != 1)
+            return 0;
+    }
+
+    //TODO: תבדוק אם אתה מוריד את הבדיקת הבאות אם עדיין הכל נכון
+
+    // if walking in the same col and not walking to left or right
+    if(abs(move.jSrc - move.jDest) == 0)
+        return 0;
+
+    // if walking in the same row and not walking up or dawn
+    if(abs(move.iSrc - move.iDest) == 0)
+        return 0;
+
+    //If we pass all checks it means everything is fine, continue to next checks ...
+    return 1;
+}
+
+int checkValidRook(char board[][SIZE],Move move)
+{
+    // if walking not in the same row or the same col
+    if((move.jSrc != move.jDest) && (move.iSrc != move.iDest))
+        return 0;
+
+    //if walking in the same row
+    if(move.jSrc != move.jDest)
+    {
+
+        //check witch direction the player move L==left and R== right
+        char result = move.jSrc > move.jDest ? 'L':'R';
+
+        if(result == 'L')
+        {
+            //check for the next step if the place is empty
+//            for (int i = 0; i < steps ; i++)
+//            {
+//                if(!(isEmpty(board[SIZE][SIZE],move.iSrc,move.jSrc-k)))
+//                    return 0;
+//                k++;
+//            }
+            for (int i = move.jSrc-1; i >=move.jDest ; i--) {
+                if(!(isEmpty(board,move.iSrc,i)))
+                    return 0;
+
+            }
+        } else
+        {//GO RIGHT
+            //check for the next step if the place is empty
+            for (int i = move.jSrc+1; i <= move.jDest ; i++)
+            {
+                if(!(isEmpty(board,move.iSrc,i)))
+                    return 0;
+            }
+    }
+    //if walking in the same col
+    if(move.iSrc != move.iDest)
+    {
+        //check witch direction the player move U==up and D==down
+        char result = move.iSrc > move.iDest ? 'U':'D';
+
+            if(result == 'U')
+            {
+                //check for the next step if the place is empty
+                for (int i = move.iSrc-1 ; i >= move.iDest ; i--)
+                {
+                    if(!(isEmpty(board,i,move.jSrc)))
+                        return 0;
+                }
+            } else
+            {
+                //check for the next step if the place is empty
+                for (int i = move.iSrc+1 ; i <= move.iDest ; i++)
+                {
+                    if(!(isEmpty(board,i,move.jSrc)))
+                        return 0;
+                }
+            }
+        }
+    return 1;
 }
 
 int checkValidPawn(char board[][SIZE],Move move)
@@ -149,12 +265,7 @@ int isLastRow(char board[][SIZE],Move move)
         return 0;
 }
 
-int isEmpty(char board[][SIZE],int row, int col){
-    if(board[row][col] == EMPTY)
-        return 1;
-    else
-        return 0;
-}
+
 
 int isDigit(char digit)
 {
@@ -503,6 +614,8 @@ int checkValidPromotion(char board[][SIZE],Move move) {
 }
 
 int isValidMove(char board[][SIZE], Move move){
+    //TODO: לבדוק שלא מתנגשים בקיר או עוברים אותו :)
+
     if(move.player == PAWN){
         if(checkValidPawn(board,move) == 0)
             return  0;
