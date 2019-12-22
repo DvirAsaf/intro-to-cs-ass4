@@ -536,7 +536,7 @@ int checkValidRook(char board[][SIZE],Move move)
 int checkValidPawn(char board[][SIZE],Move move)
 {
     //capture and walking straight - error!!!
-    if(move.isCapture && move.jSrc != move.jDest)
+    if(move.isCapture && move.jSrc == move.jDest)
         return 0;
 
     //double step and not im second row - error!!!
@@ -557,16 +557,18 @@ int checkValidPawn(char board[][SIZE],Move move)
     //if white walking not straight - error!!!
     if(move.isWhite)
     {
-        if(!(( move.iSrc-move.iDest==1 || move.iSrc-move.iDest==2 )&& move.jSrc==move.jDest))
+        if(!( move.iSrc-move.iDest==1 || move.iSrc-move.iDest==2 ))
             return 0;
     } else{
         //if black walking not straight - error!!!
-        if(!((move.iDest-move.iSrc==1 || move.iDest-move.iSrc==2) && move.jSrc==move.jDest))
+        if(!(move.iDest-move.iSrc==1 || move.iDest-move.iSrc==2))
             return 0;
     }
-
-
-
+    if(!move.isCapture)
+    {
+        if( move.jSrc!=move.jDest)
+            return 0;
+    }
 
     return 1;
 }
@@ -1349,7 +1351,7 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
         return 0;
 
     updateBoard(board,move);
-
+    return 1;
 
 }
 
