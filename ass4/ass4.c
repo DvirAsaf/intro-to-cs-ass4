@@ -1337,8 +1337,8 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
     if(!move.hasSrcRow || !move.hasSrcCol)
     {
         Location loc = searchSrc(board,move);
-        if(loc.isValid == 0)
-            return 0;
+//        if(loc.isValid == 0)
+//            return 0;
         if(move.hasSrcRow) {
             move.iSrc = changeCharToIndex(move.srcRow);
             move.jSrc = loc.col;
