@@ -555,12 +555,18 @@ int checkValidPawn(char board[][SIZE],Move move)
         return 0;
 
     //if white walking not straight - error!!!
-    if(!(move.isWhite && move.iSrc-move.iDest==1 && move.jSrc==move.jDest))
-        return 0;
+    if(move.isWhite)
+    {
+        if(!(( move.iSrc-move.iDest==1 || move.iSrc-move.iDest==2 )&& move.jSrc==move.jDest))
+            return 0;
+    } else{
+        //if black walking not straight - error!!!
+        if(!((move.iDest-move.iSrc==1 || move.iDest-move.iSrc==2) && move.jSrc==move.jDest))
+            return 0;
+    }
 
-    //if black walking not straight - error!!!
-    if(!(!move.isWhite && move.iDest-move.iSrc==1 && move.jSrc==move.jDest))
-        return 0;
+
+
 
     return 1;
 }
@@ -585,6 +591,8 @@ int checkValidCapture(char board[][SIZE],Move move)
         //trying to move to place with enemy without saying it is capture - not valid
 //        if((move.isWhite && islower(digit)) || (!move.isWhite && isupper(digit)))
 //            return 0;
+        if(digit == EMPTY)
+            return 1;
         if(checkDifferentColors(board,move) == 1)
         {
             return 0;//Capture without saying it
@@ -1259,6 +1267,10 @@ void changeBoard(char board[][SIZE])
 }
 
 char capitalToLower(char capitalLetter)
+{
+    char lowerLetter = capitalLetter + ('a' - 'A');
+    return lowerLetter;
+}
 void updateBoard(char board[][SIZE],Move move)
 {
     //clean src location
@@ -1267,8 +1279,10 @@ void updateBoard(char board[][SIZE],Move move)
     //update dest location
     char player;
 
-    if(move.isWhite)
-        board[move.iDest,move.jDest] = tolower(move.player);
+    if(!move.isWhite)
+        board[move.iDest][move.jDest] = capitalToLower(move.player);
+    else
+        board[move.iDest][move.jDest] = move.player;
 
 }
 
@@ -1304,7 +1318,7 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
         move.destRow = findDstRow(pgn,1);
         move.hasSrcRow = 1;
     }else {
-        move.destCol = findDstCol(pgn,0);
+        move.destRow = findDstRow(pgn,0);
     }
     move.jDest = changeCharToIndex(move.destCol);
     move.iDest = changeCharToIndex(move.destRow);
@@ -1333,6 +1347,8 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
 
     if(!isValidMove(board,move))
         return 0;
+
+    updateBoard(board,move);
 
 
 }
