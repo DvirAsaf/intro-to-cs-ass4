@@ -67,6 +67,141 @@ typedef struct
 
 }piece;
 
+int isDigit(char digit)
+{
+    return ('0' <= digit && digit <= '9');
+}
+
+int isSrcCol(char pgn[])
+{
+    int i=0;
+    int conter = 0;
+    char cure = pgn[i];
+    while (cure != '\0')
+    {
+        if(islower(cure)&& cure != CAPTURE)
+        {
+            conter++;
+        }
+        i++;
+        cure = pgn[i];
+    }
+    if(conter==2)
+    {
+        return 1;
+    } else return 0;
+}
+
+int isSrcRow(char pgn[])
+{
+    int i=0;
+    int conter = 0;
+    char cure = pgn[i];
+    while (cure != '\0')
+    {
+        if(isDigit(cure))
+        {
+            conter++;
+        }
+        i++;
+        cure = pgn[i];
+    }
+    if(conter==2)
+    {
+        return 1;
+    } else return 0;
+}
+
+char findDstCol(char pgn[],int isSrcCol)
+{
+    int i=0;
+    if(isSrcCol){
+        //return the second lower char
+        int isFoundSrc = 0;
+        while (pgn[i] != '\0')
+        {
+            if(islower(pgn[i]) && pgn[i] != CAPTURE)
+            {
+                if(!isFoundSrc){
+                    isFoundSrc = 1;
+                } else{
+                    //this is second time we find lower char so return dst
+                    return pgn[i];
+                }
+            }
+            i++;
+        }
+    }else{
+        //return first lower char
+        while (pgn[i] != '\0')
+        {
+            if(islower(pgn[i])  && pgn[i] != CAPTURE)
+            {
+                return pgn[i];
+            } else i++;
+        }
+    }
+    //never happens
+    return 'y';
+}
+
+char findSrcRow(char pgn[])
+{
+    int i=0;
+    while (pgn[i] != '\0')
+    {
+        if(isDigit(pgn[i]))
+        {
+            return pgn[i];
+        } else i++;
+    }
+    //never happens
+    return 'y';
+}
+
+char findDstRow(char pgn[],int isSrcRow)
+{
+    int i=0;
+    if(isSrcRow){
+        //return the second digit
+        int isFoundSrc = 0;
+        while (pgn[i] != '\0')
+        {
+            if(isDigit(pgn[i]))
+            {
+                if(!isFoundSrc){
+                    isFoundSrc = 1;
+                } else{
+                    //this is second time we find digit so return dst
+                    return pgn[i];
+                }
+            }
+            i++;
+        }
+    }else{
+        //return first digit
+        while (pgn[i] != '\0')
+        {
+            if(isDigit(pgn[i]))
+            {
+                return pgn[i];
+            } else i++;
+        }
+    }
+    //never happens
+    return 'y';
+}
+
+void changeCharToIndex(Move move,char pgn[],int isSrcRow, int isSrcCol)
+{
+    int numberRow = 0;
+    numberRow = findDstRow(pgn,isSrcRow) - '0';
+    move.iDest = SIZE - numberRow;
+
+    move.jDest = findDstCol(pgn,isSrcCol) - 'a';
+
+}
+
 int isEmpty(char board[][SIZE],int row, int col){
     if(board[row][col] == EMPTY)
         return 1;
@@ -458,11 +593,6 @@ int isLastRow(char board[][SIZE],Move move)
         return 0;
 }
 
-int isDigit(char digit)
-{
-    return ('0' <= digit && digit <= '9');
-}
-
 void createBoard(char board[][SIZE], char fen[])
 {
     // cureDigit = the value of fen
@@ -586,7 +716,7 @@ int isPromotion(char pgn[])
 
 }
 
-char whichPromoion(char pgn[])
+char whichPromotion(char pgn[])
 {
     int i=0;
     char cure = pgn[i];
@@ -638,46 +768,6 @@ int isMate(char pgn[])
 
 }
 
-int isSrcCol(char pgn[])
-{
-    int i=0;
-    int conter = 0;
-    char cure = pgn[i];
-    while (cure != '\0')
-    {
-        if(islower(cure)&& cure != CAPTURE)
-        {
-            conter++;
-        }
-        i++;
-        cure = pgn[i];
-    }
-    if(conter==2)
-    {
-        return 1;
-    } else return 0;
-}
-
-int isSrcRow(char pgn[])
-{
-    int i=0;
-    int conter = 0;
-    char cure = pgn[i];
-    while (cure != '\0')
-    {
-        if(isDigit(cure))
-        {
-            conter++;
-        }
-        i++;
-        cure = pgn[i];
-    }
-    if(conter==2)
-    {
-        return 1;
-    } else return 0;
-}
-
 char whichPlayer(char pgn[])
 {
     if(isupper(pgn[0]))
@@ -695,86 +785,6 @@ char findSrcCol(char pgn[])
         {
             return pgn[i];
         } else i++;
-    }
-    //never happens
-    return 'y';
-}
-
-char findSrcRow(char pgn[])
-{
-    int i=0;
-    while (pgn[i] != '\0')
-    {
-        if(isDigit(pgn[i]))
-        {
-            return pgn[i];
-        } else i++;
-    }
-    //never happens
-    return 'y';
-}
-
-char findDstCol(char pgn[],int isSrcCol)
-{
-    int i=0;
-    if(isSrcCol){
-        //return the second lower char
-        int isFoundSrc = 0;
-        while (pgn[i] != '\0')
-        {
-            if(islower(pgn[i]) && pgn[i] != CAPTURE)
-            {
-                if(!isFoundSrc){
-                    isFoundSrc = 1;
-                } else{
-                    //this is second time we find lower char so return dst
-                    return pgn[i];
-                }
-            }
-            i++;
-        }
-    }else{
-        //return first lower char
-        while (pgn[i] != '\0')
-        {
-            if(islower(pgn[i])  && pgn[i] != CAPTURE)
-            {
-                return pgn[i];
-            } else i++;
-        }
-    }
-    //never happens
-    return 'y';
-}
-
-char findDstRow(char pgn[],int isSrcRow)
-{
-    int i=0;
-    if(isSrcRow){
-        //return the second digit
-        int isFoundSrc = 0;
-        while (pgn[i] != '\0')
-        {
-            if(isDigit(pgn[i]))
-            {
-                if(!isFoundSrc){
-                    isFoundSrc = 1;
-                } else{
-                    //this is second time we find digit so return dst
-                    return pgn[i];
-                }
-            }
-            i++;
-        }
-    }else{
-        //return first digit
-        while (pgn[i] != '\0')
-        {
-            if(isDigit(pgn[i]))
-            {
-                return pgn[i];
-            } else i++;
-        }
     }
     //never happens
     return 'y';
