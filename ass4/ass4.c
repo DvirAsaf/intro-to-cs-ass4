@@ -54,6 +54,7 @@ typedef struct {
 } Move;
 typedef struct {
     int row,col;
+    int isValid;
 
 }Location;
 
@@ -595,12 +596,12 @@ int checkValidCapture(char board[][SIZE],Move move)
         //trying to move to place with enemy without saying it is capture - not valid
 //        if((move.isWhite && islower(digit)) || (!move.isWhite && isupper(digit)))
 //            return 0;
-        if(digit == EMPTY)
-            return 1;
-        if(checkDifferentColors(board,move) == 1)
-        {
-            return 0;//Capture without saying it
-        }
+        if(digit != EMPTY)
+            return 0;
+//        if(checkDifferentColors(board,move) == 1)
+//        {
+//            return 0;//Capture without saying it
+//        }
         return 1;
     }
 }
@@ -940,6 +941,11 @@ Location searchWhitePawn(char board[][SIZE],Move move)
         } else{
             loc.row = move.iDest + 1;
         }
+    }
+    if(board[loc.row][loc.col] != WHITE_PAWN)
+    {
+        loc.isValid =0;
+
     }
     return loc;
 }
@@ -1331,6 +1337,8 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
     if(!move.hasSrcRow || !move.hasSrcCol)
     {
         Location loc = searchSrc(board,move);
+        if(loc.isValid == 0)
+            return 0;
         if(move.hasSrcRow) {
             move.iSrc = changeCharToIndex(move.srcRow);
             move.jSrc = loc.col;
