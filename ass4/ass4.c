@@ -219,7 +219,7 @@ int isEmpty(char board[][SIZE],int row, int col){
 int checkDifferentColors(char board[][SIZE],Move move)
 {
     char srcPlayer = board[move.iSrc][move.jSrc];
-    char destPlayer = board[move.jSrc][move.jDest];
+    char destPlayer = board[move.iDest][move.jDest];
     //White player can't capture white player
     if(isupper(srcPlayer)&& isupper(destPlayer))
     {
@@ -416,6 +416,8 @@ int checkValidBishop(char board[][SIZE],Move move)
 {
     //number of steps that the player move in diagonal line
     int steps = abs(move.iSrc - move.iDest);
+    if(move.isCapture)
+        steps = steps-1;
     //if the player do not move in diagonal line
     if (abs(move.iSrc - move.iDest) != abs(move.jSrc - move.jDest))
         return 0;
@@ -861,6 +863,7 @@ int isValidMove(char board[][SIZE], Move move)
         }
         case 'B':
         {
+            //TODO: נופל פה
             if(checkValidBishop(board,move)==0)
                 return 0;
             break;
