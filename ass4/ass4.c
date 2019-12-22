@@ -50,6 +50,7 @@ typedef struct {
     int iSrc, jSrc, iDest, jDest;
     int isWhite, isCapture, isPromotion, isCheck, isMate, isLegal;
     char promotionChange;
+    int hasSrcCol,hasSrcRow;
 } Move;
 typedef struct {
     int row,col;
@@ -192,14 +193,20 @@ char findDstRow(char pgn[],int isSrcRow)
     return 'y';
 }
 
-void changeCharToIndex(Move move,char pgn[],int isSrcRow, int isSrcCol)
+int changeCharToIndex(char charToIndex)
 {
-    int numberRow = 0;
-    numberRow = findDstRow(pgn,isSrcRow) - '0';
-    move.iDest = SIZE - numberRow;
-
-    move.jDest = findDstCol(pgn,isSrcCol) - 'a';
-
+    int res;
+    //convert number to row
+    if(isDigit(charToIndex))
+    {
+        res = charToIndex - '0';
+        res = SIZE - res;
+    }
+    // convert from col char to index : a->0, b->1 ...
+    else{
+        res = charToIndex - 'a';
+    }
+    return res;
 }
 
 int isEmpty(char board[][SIZE],int row, int col){
@@ -336,9 +343,10 @@ int checkValidQueen(char board[][SIZE],Move move) {
                 if (!(isEmpty(board, i, move.jSrc)))
                     return 0;
             }
-        }return 1;
+        }
+        return 1;
     }
-    //if walking in the same row
+        //if walking in the same row
     else if (stepsRow==0) {
         //check witch direction the player move L==left and R== right
         char result = move.jSrc > move.jDest ? 'L' : 'R';
@@ -433,7 +441,7 @@ int checkValidBishop(char board[][SIZE],Move move)
             }
         }
     }
-    //the player move right and up in diagonal line, and check that of the way is free (empty) if not error!
+        //the player move right and up in diagonal line, and check that of the way is free (empty) if not error!
     else if (side == 'R' && direction == 'U') {
         i = i - 1;
         j = j + 1;
@@ -444,7 +452,7 @@ int checkValidBishop(char board[][SIZE],Move move)
             j++;
         }
     }
-    //the player move left and down in diagonal line, and check that of the way is free (empty) if not error!
+        //the player move left and down in diagonal line, and check that of the way is free (empty) if not error!
     else if (side == 'L' && direction == 'D') {
         {
             i = i + 1;
@@ -457,7 +465,7 @@ int checkValidBishop(char board[][SIZE],Move move)
             }
         }
     }
-    //the player move right and down in diagonal line, and check that of the way is free (empty) if not error!
+        //the player move right and down in diagonal line, and check that of the way is free (empty) if not error!
     else if (side == 'R' && direction == 'D') {
         i = i + 1;
         j = j + 1;
@@ -504,23 +512,23 @@ int checkValidRook(char board[][SIZE],Move move)
         //check witch direction the player move U==up and D==down
         char result = move.iSrc > move.iDest ? 'U':'D';
 
-            if(result == 'U')
+        if(result == 'U')
+        {
+            //check for the next step if the place is empty
+            for (int i = move.iSrc-1 ; i >= move.iDest ; i--)
             {
-                //check for the next step if the place is empty
-                for (int i = move.iSrc-1 ; i >= move.iDest ; i--)
-                {
-                    if(!(isEmpty(board,i,move.jSrc)))
-                        return 0;
-                }
-            } else
-            {
-                //check for the next step if the place is empty
-                for (int i = move.iSrc+1 ; i <= move.iDest ; i++)
-                {
-                    if(!(isEmpty(board,i,move.jSrc)))
-                        return 0;
-                }
+                if(!(isEmpty(board,i,move.jSrc)))
+                    return 0;
             }
+        } else
+        {
+            //check for the next step if the place is empty
+            for (int i = move.iSrc+1 ; i <= move.iDest ; i++)
+            {
+                if(!(isEmpty(board,i,move.jSrc)))
+                    return 0;
+            }
+        }
     }
     return 1;
 }
@@ -834,7 +842,7 @@ int isValidMove(char board[][SIZE], Move move){
     else if(move.player == BISHOP)
     {
         if(checkValidBishop(board,move)==0)
-        return 0;
+            return 0;
     }
     else if(move.player == QUEEN)
     {
@@ -849,9 +857,355 @@ int isValidMove(char board[][SIZE], Move move){
 //    return 1;
 }
 
+int searchSrcRow(board[][SIZE],Move move)
+{
+    if(move.hasSrcCol)
+    {
+
+    }
+}
+
+int searchSrcCol(board[][SIZE],Move move)
+{
+
+}
+
+Location SearchBlackPawn(board[][SIZE],Move move)
+{
+    Location loc;
+    if(move.isCapture)
+    {
+        loc.row = move.iDest-1;
+        if(board[loc.row][move.jDest-1] == BLACK_PAWN)
+            loc.col = move.jDest - 1 ;
+        else
+            loc.col = move.jDest + 1;
+
+    } else{
+        loc.col = move.jDest;
+        //can be double step
+        if(move.iDest == 3)
+        {
+            if(board[move.iDest-1][move.jDest] == BLACK_PAWN)
+                loc.row = move.iDest - 1;
+            else
+                loc.row = move.iDest - 2;
+        } else{
+            loc.row = move.iDest - 1;
+        }
+    }
+    return loc;
+}
+
+Location searchSrcBlack(board[][SIZE],Move move)
+{
+    //TODO: לבדוק מה תשובת המרצה ואם לא חוקי אז תמיד לבדוק שהתו הנבדק אם הוא לא החייל המבוקש שהוא תו ריק לעשות ברייק  ולהמשיך לחפש בכיוונים השונים
+    Location loc;
+    switch (move.player) {
+        case PAWN:
+        {
+            if(move.isCapture)
+            {
+                loc.row = move.iDest-1;
+                if(board[loc.row][move.jDest-1] == BLACK_PAWN)
+                    loc.col = move.jDest - 1 ;
+                else
+                    loc.col = move.jDest + 1;
+
+            } else{
+                loc.col = move.jDest;
+                //can be double step
+                if(move.iDest == 3)
+                {
+                    if(board[move.iDest-1][move.jDest] == BLACK_PAWN)
+                        loc.row = move.iDest - 1;
+                    else
+                        loc.row = move.iDest - 2;
+                } else{
+                    loc.row = move.iDest - 1;
+                }
+            }
+            break;
+        }
+        case ROOK:
+        {
+            int flag = 0;
+            for (int j = 0; j < SIZE; ++j)
+            {
+                if(board[move.iDest][j]==BLACK_ROOK)
+                {
+                    loc.col = j;
+                    loc.row = move.iDest;
+                    flag=1;
+                    break;
+                }
+            }
+            if(!flag)
+            {
+                for (int i = 0; i < SIZE; ++i)
+                {
+                    if(board[i][move.jDest]==BLACK_ROOK)
+                    {
+                        loc.row = i;
+                        loc.col = move.jDest;
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+        case QUEEN:
+        {
+
+            break;
+        }
+        case KING:
+        {
+//            if(move.iDest==0||move.)
+            for (int i = move.iDest-1; i <=move.iDest+1 ; ++i)
+            {
+                for (int j = move.jDest-1; j <= move.jDest+1 ; ++j)
+                {
+                    if(i<0 || i>=SIZE || j<0 || j>=SIZE)
+                        continue;
+                    if(board[i][j]==BLACK_KING)
+                        {
+                        loc.col = j;
+                        loc.row = i;
+                            break;
+                        }
+                }
+            }
+            break;
+        }
+        case BISHOP:
+        {
+            int flag = 0;
+            int j = move.jDest-1;
+            //diagnol line from left corner to right down
+            for (int i = move.iDest - 1; i >=0 ; i--)
+            {
+                if(j<0)
+                    break;
+                if(board[i][j] == BLACK_BISHOP)
+                {
+                    loc.col = j;
+                    loc.row = i;
+                    flag = 1;
+                }
+                j--;
+            }
+            if(!flag)
+            {
+                j = move.jDest+1;
+                //diagnol line up and left
+                for (int i = move.iDest + 1; i <SIZE ; i++)
+                {
+                    if(j>=SIZE)
+                        break;
+                    if(board[i][j] == BLACK_BISHOP)
+                    {
+                        loc.col = j;
+                        loc.row = i;
+                        flag = 1;
+                    }
+                    j++;
+                }
+            }
+            if(!flag)
+            {
+                j = move.jDest-1;
+                //diagnol line up and right
+                for (int i = move.iDest + 1; i <SIZE ; i++)
+                {
+                    if(j<0)
+                        break;
+                    if(board[i][j] == BLACK_BISHOP)
+                    {
+                        loc.col = j;
+                        loc.row = i;
+                        flag = 1;
+                    }
+                    j--;
+                }
+            }
+            if(!flag)
+            {
+                j = move.jDest+1;
+                //diagnol line down and left
+                for (int i = move.iDest - 1; i >= 0 ; i--)
+                {
+                    if(j>=SIZE)
+                        break;
+                    if(board[i][j] == BLACK_BISHOP)
+                    {
+                        loc.col = j;
+                        loc.row = i;
+                    }
+                    j++;
+                }
+            }
+            break;
+        }
+        case KNIGHT:
+        {
+            int flag = 0;
+            int i = move.iDest,j=move.jDest;
+
+            //2 steps row one col
+            if(i-2>=0 && j-1>=0)
+            {
+                if(board[i-2][j-1] == BLACK_KNIGHT)
+                {
+                    loc.row = i-2;
+                    loc.col = j-1;
+                    flag=1;
+                }
+            }
+            if(!flag)
+            {
+                if(i-2>=0 && j+1<SIZE)
+                {
+                    if(board[i-2][j+1] == BLACK_KNIGHT)
+                    {
+                        loc.row = i-2;
+                        loc.col = j+1;
+                        flag=1;
+                    }
+                }
+            }
+            if(!flag)
+            {
+                if(i+2<SIZE && j+1<SIZE)
+                {
+                    if(board[i+2][j+1] == BLACK_KNIGHT)
+                    {
+                        loc.row = i+2;
+                        loc.col = j+1;
+                        flag=1;
+                    }
+                }
+            }
+            if(!flag)
+            {
+                if(i+2<SIZE && j-1>=0)
+                {
+                    if(board[i+2][j-1] == BLACK_KNIGHT)
+                    {
+                        loc.row = i+2;
+                        loc.col = j-1;
+                        flag=1;
+                    }
+                }
+            }
+
+            //2 steps col one row
+            if(!flag)
+            {
+                if(i+1<SIZE && j-2>=0)
+                {
+                    if(board[i+1][j-2] == BLACK_KNIGHT)
+                    {
+                        loc.row = i+1;
+                        loc.col = j-2;
+                        flag=1;
+                    }
+                }
+            }
+
+            if(!flag)
+            {
+                if(i+1<SIZE && j+2< SIZE)
+                {
+                    if(board[i+1][j+2] == BLACK_KNIGHT)
+                    {
+                        loc.row = i+1;
+                        loc.col = j+2;
+                        flag=1;
+                    }
+                }
+            }
+
+            if(!flag)
+            {
+                if(i-1>=0 && j-2>=0)
+                {
+                    if(board[i-1][j-2] == BLACK_KNIGHT)
+                    {
+                        loc.row = i-1;
+                        loc.col = j-2;
+                        flag=1;
+                    }
+                }
+            }
+
+            if(!flag)
+            {
+                if(i-1>=0 && j+2<SIZE)
+                {
+                    if(board[i-1][j+2] == BLACK_KNIGHT)
+                    {
+                        loc.row = i-1;
+                        loc.col = j+2;
+                    }
+                }
+            }
+            break;
+        }
+    }
+    return loc;
+}
+
+Location searchSrcWhite(board[][SIZE],Move move)
+{
+    Location loc;
+    switch (move.player) {
+        case PAWN:
+        {
+            if(move.isCapture)
+            {
+
+            } else{
+                loc.col = move.jDest;
+
+            }
+            break;
+        }
+        case ROOK:
+            break;
+        case QUEEN:
+            break;
+        case KING:
+            break;
+        case BISHOP:
+            break;
+        case KNIGHT:
+            break;
+    }
+    if(move.player == PAWN)
+    {
+        if(move.isCapture)
+        {
+
+        } else{
+            loc.col = move.jDest;
+
+        }
+
+
+    }
+
+
+    return loc;
+}
+
+
+
 int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
 {
     Move move;
+    move.hasSrcCol = 0;
+    move.hasSrcRow = 0;
     move.player = whichPlayer(pgn);
     move.isMate = isMate(pgn);
     move.isCheck = isCheck(pgn);
@@ -859,14 +1213,17 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
     move.isPromotion = isPromotion(pgn);
     if(move.isPromotion)
     {
-        move.promotionChange = whichPromoion(pgn);
+        move.promotionChange = whichPromotion(pgn);
     }
     move.isWhite = isWhiteTurn;
-    //if there is a src col
+    //if there is a src col set it
     if(isSrcCol(pgn))
     {
         move.srcCol = findSrcCol(pgn);
         move.destCol = findDstCol(pgn,1);
+        move.hasSrcCol = 1;
+
+
     } else{
         move.destCol = findDstCol(pgn,0);
     }
@@ -875,9 +1232,25 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
     {
         move.srcRow = findSrcRow(pgn);
         move.destRow = findDstRow(pgn,1);
+        move.hasSrcRow = 1;
     }else {
         move.destCol = findDstCol(pgn,0);
     }
+    move.jDest = changeCharToIndex(move.destCol);
+    move.iDest = changeCharToIndex(move.destRow);
+
+    if(!move.hasSrcRow || !move.hasSrcCol)
+    {
+        //SET_SRC+
+    }
+
+    //TODO: אחרי שמוצאים את נקודת המוצא אפשר לעדכן את האינדקסים של המוצא
+    //update index values:
+    move.jSrc = changeCharToIndex(move.srcCol);
+    move.iSrc = changeCharToIndex(move.srcRow);
+
+
+
 
 }
 
@@ -1005,3 +1378,5 @@ int isMove(char board[][SIZE],char piece,Location src, Location dest)
 ////if the move is legal return 1 if not return 0.
 //
 //}
+
+
