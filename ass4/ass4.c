@@ -204,7 +204,7 @@ int changeCharToIndex(char charToIndex)
         res = charToIndex - '0';
         res = SIZE - res;
     }
-    // convert from col char to index : a->0, b->1 ...
+        // convert from col char to index : a->0, b->1 ...
     else{
         res = charToIndex - 'a';
     }
@@ -259,118 +259,120 @@ int checkValidKing(char board[][SIZE],Move move)
     return 1;
 }
 
-int checkValidQueen(char board[][SIZE],Move move) {
-    int stepsRow = abs(move.jSrc - move.jDest);
-    int stepsCol = abs(move.iSrc - move.jDest);
 
-    if (stepsCol == stepsRow) {
-        //number of steps that the player move in diagonal line
-        int steps = abs(move.iSrc - move.iDest);
-        //if the player do not move in diagonal line
-        if (abs(move.iSrc - move.iDest) != abs(move.jSrc - move.jDest))
-            return 0;
-        // char side that tell me witch side the player move
-        char side;
-        side = move.jSrc > move.jDest ? 'L' : 'R';
-        // char side that tell me witch direction the player move
-        char direction;
-        direction = move.iSrc > move.iDest ? 'U' : 'D';
-        // i == src row and j== src col
-        int i = move.iSrc;
-        int j = move.jSrc;
-        //the player move left and up in diagonal line, and check that of the way is free (empty) if not error!
-        if (side == 'L' && direction == 'U') {
-            {
-                i = i - 1;
-                j = j - 1;
-                for (int k = 0; k < steps; ++k) {
-                    if (!isEmpty(board, i, j))
-                        return 0;
-                    i--;
-                    j--;
-                }
-            }
-        }
-            //the player move right and up in diagonal line, and check that of the way is free (empty) if not error!
-        else if (side == 'R' && direction == 'U') {
-            i = i - 1;
-            j = j + 1;
-            for (int k = 0; k < steps; k++) {
-                if (!isEmpty(board, i, j))
-                    return 0;
-                i--;
-                j++;
-            }
-        }
-            //the player move left and down in diagonal line, and check that of the way is free (empty) if not error!
-        else if (side == 'L' && direction == 'D') {
-            {
-                i = i + 1;
-                j = j - 1;
-                for (int k = 0; k < steps; ++k) {
-                    if (!isEmpty(board, i, j))
-                        return 0;
-                    i++;
-                    j--;
-                }
-            }
-        }
-            //the player move right and down in diagonal line, and check that of the way is free (empty) if not error!
-        else if (side == 'R' && direction == 'D') {
-            i = i + 1;
-            j = j + 1;
-            for (int k = 0; k < steps; ++k) {
-                if (!isEmpty(board, i, j))
-                    return 0;
-                i++;
-                j++;
-            }
-        }
-        return 1;
-    }//if walking in the same col
-    else if (stepsCol == 0)
-    {
-        //check witch direction the player move U==up and D==down
-        char result = move.iSrc > move.iDest ? 'U' : 'D';
 
-        if (result == 'U') {
-            //check for the next step if the place is empty
-            for (int i = move.iSrc - 1; i >= move.iDest; i--) {
-                if (!(isEmpty(board, i, move.jSrc)))
-                    return 0;
-            }
-        } else {
-            //check for the next step if the place is empty
-            for (int i = move.iSrc + 1; i <= move.iDest; i++) {
-                if (!(isEmpty(board, i, move.jSrc)))
-                    return 0;
-            }
-        }
-        return 1;
-    }
-        //if walking in the same row
-    else if (stepsRow==0) {
-        //check witch direction the player move L==left and R== right
-        char result = move.jSrc > move.jDest ? 'L' : 'R';
-
-        if (result == 'L') {
-            for (int i = move.jSrc - 1; i >= move.jDest; i--) {
-                if (!(isEmpty(board, move.iSrc, i)))
-                    return 0;
-            }
-        }
-            //GO RIGHT
-        else {
-            //check for the next step if the place is empty
-            for (int i = move.jSrc + 1; i <= move.jDest; i++) {
-                if (!(isEmpty(board, move.iSrc, i)))
-                    return 0;
-            }
-
-        }
-}
-    return 0;
-}
+//int checkValidQueen(char board[][SIZE],Move move) {
+//    int stepsRow = abs(move.jSrc - move.jDest);
+//    int stepsCol = abs(move.iSrc - move.jDest);
+//
+//    if (stepsCol == stepsRow) {
+//        //number of steps that the player move in diagonal line
+//        int steps = abs(move.iSrc - move.iDest);
+//        //if the player do not move in diagonal line
+//        if (abs(move.iSrc - move.iDest) != abs(move.jSrc - move.jDest))
+//            return 0;
+//        // char side that tell me witch side the player move
+//        char side;
+//        side = move.jSrc > move.jDest ? 'L' : 'R';
+//        // char side that tell me witch direction the player move
+//        char direction;
+//        direction = move.iSrc > move.iDest ? 'U' : 'D';
+//        // i == src row and j== src col
+//        int i = move.iSrc;
+//        int j = move.jSrc;
+//        //the player move left and up in diagonal line, and check that of the way is free (empty) if not error!
+//        if (side == 'L' && direction == 'U') {
+//            {
+//                i = i - 1;
+//                j = j - 1;
+//                for (int k = 0; k < steps; ++k) {
+//                    if (!isEmpty(board, i, j))
+//                        return 0;
+//                    i--;
+//                    j--;
+//                }
+//            }
+//        }
+//            //the player move right and up in diagonal line, and check that of the way is free (empty) if not error!
+//        else if (side == 'R' && direction == 'U') {
+//            i = i - 1;
+//            j = j + 1;
+//            for (int k = 0; k < steps; k++) {
+//                if (!isEmpty(board, i, j))
+//                    return 0;
+//                i--;
+//                j++;
+//            }
+//        }
+//            //the player move left and down in diagonal line, and check that of the way is free (empty) if not error!
+//        else if (side == 'L' && direction == 'D') {
+//            {
+//                i = i + 1;
+//                j = j - 1;
+//                for (int k = 0; k < steps; ++k) {
+//                    if (!isEmpty(board, i, j))
+//                        return 0;
+//                    i++;
+//                    j--;
+//                }
+//            }
+//        }
+//            //the player move right and down in diagonal line, and check that of the way is free (empty) if not error!
+//        else if (side == 'R' && direction == 'D') {
+//            i = i + 1;
+//            j = j + 1;
+//            for (int k = 0; k < steps; ++k) {
+//                if (!isEmpty(board, i, j))
+//                    return 0;
+//                i++;
+//                j++;
+//            }
+//        }
+//        return 1;
+//    }//if walking in the same col
+//    else if (stepsCol == 0)
+//    {
+//        //check witch direction the player move U==up and D==down
+//        char result = move.iSrc > move.iDest ? 'U' : 'D';
+//
+//        if (result == 'U') {
+//            //check for the next step if the place is empty
+//            for (int i = move.iSrc - 1; i >= move.iDest; i--) {
+//                if (!(isEmpty(board, i, move.jSrc)))
+//                    return 0;
+//            }
+//        } else {
+//            //check for the next step if the place is empty
+//            for (int i = move.iSrc + 1; i <= move.iDest; i++) {
+//                if (!(isEmpty(board, i, move.jSrc)))
+//                    return 0;
+//            }
+//        }
+//        return 1;
+//    }
+//        //if walking in the same row
+//    else if (stepsRow==0) {
+//        //check witch direction the player move L==left and R== right
+//        char result = move.jSrc > move.jDest ? 'L' : 'R';
+//
+//        if (result == 'L') {
+//            for (int i = move.jSrc - 1; i >= move.jDest; i--) {
+//                if (!(isEmpty(board, move.iSrc, i)))
+//                    return 0;
+//            }
+//        }
+//            //GO RIGHT
+//        else {
+//            //check for the next step if the place is empty
+//            for (int i = move.jSrc + 1; i <= move.jDest; i++) {
+//                if (!(isEmpty(board, move.iSrc, i)))
+//                    return 0;
+//            }
+//
+//        }
+//    }
+//    return 0;
+//}
 
 int checkValidKnight(char board[][SIZE],Move move)
 {
@@ -484,6 +486,7 @@ int checkValidBishop(char board[][SIZE],Move move)
     return 1;
 }
 
+
 int checkValidRook(char board[][SIZE],Move move)
 {
     // if walking not in the same row or the same col
@@ -538,6 +541,15 @@ int checkValidRook(char board[][SIZE],Move move)
     return 1;
 }
 
+//TODO: הפונקצית בדיקה של המלכה שלך לא הייתה נכונה, הבנת נכון את המשמעות של השילוב בין שתי הבדיקות יא גאון, אך מספיק טעות אחת קטנה של אינדקסים ונופלים
+//TODO: הרעיון הוא לבדוק האם אחת מהבדחקות עברה בשלום, אחרת טעות
+int checkValidQueen(char board[][SIZE],Move move)
+{
+    if(checkValidBishop(board,move) || checkValidRook(board,move))
+        return 1;
+    else
+        return 0;
+}
 int checkValidPawn(char board[][SIZE],Move move)
 {
     //capture and walking straight - error!!!
@@ -592,20 +604,21 @@ int checkValidCapture(char board[][SIZE],Move move)
         }
         return 1;
     }
-//    else if(move.isCapture == 0)
-//    {
-//        char digit = board[move.iDest][move.jDest];
-//        //trying to move to place with enemy without saying it is capture - not valid
-////        if((move.isWhite && islower(digit)) || (!move.isWhite && isupper(digit)))
-////            return 0;
-//        if(digit != EMPTY)
+    //TODO: לא יודעת למה הורדת את זה זה דפק הכל, תתקשר אלי אם אתה לא מבין מה עשינו פהלאביו דובי
+    else if(move.isCapture == 0)
+    {
+        char digit = board[move.iDest][move.jDest];
+        //trying to move to place with enemy without saying it is capture - not valid
+//        if((move.isWhite && islower(digit)) || (!move.isWhite && isupper(digit)))
 //            return 0;
-////        if(checkDifferentColors(board,move) == 1)
-////        {
-////            return 0;//Capture without saying it
-////        }
-//        return 1;
-//    }
+        if(digit != EMPTY)
+            return 0;
+//        if(checkDifferentColors(board,move) == 1)
+//        {
+//            return 0;//Capture without saying it
+//        }
+        return 1;
+    }
 }
 
 int isLastRow(char board[][SIZE],Move move)
@@ -896,6 +909,7 @@ int isValidMove(char board[][SIZE], Move move)
 Location searchBlackPawn(char board[][SIZE],Move move)
 {
     Location loc;
+    loc.isValid = 1;
     if(move.isCapture)
     {
         loc.row = move.iDest-1;
@@ -927,6 +941,8 @@ Location searchBlackPawn(char board[][SIZE],Move move)
 Location searchWhitePawn(char board[][SIZE],Move move)
 {
     Location loc;
+    loc.isValid = 1;
+    //TODO: הטעות שלנו הייתה פה,שלא אתחלנו את ואליד להיות 1 במקרה שהכל בסדר
     if(move.isCapture)
     {
         loc.row = move.iDest+1;
