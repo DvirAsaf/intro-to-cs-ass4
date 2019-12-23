@@ -81,7 +81,7 @@ int isSrcCol(char pgn[])
     char cure = pgn[i];
     while (cure != '\0')
     {
-        if(islower(cure)&& cure != CAPTURE)
+        if(islower(cure) && cure != CAPTURE)
         {
             conter++;
         }
@@ -91,7 +91,8 @@ int isSrcCol(char pgn[])
     if(conter==2)
     {
         return 1;
-    } else return 0;
+    } else
+        return 0;
 }
 
 int isSrcRow(char pgn[])
@@ -222,7 +223,7 @@ int checkDifferentColors(char board[][SIZE],Move move)
     char srcPlayer = board[move.iSrc][move.jSrc];
     char destPlayer = board[move.iDest][move.jDest];
     //White player can't capture white player
-    if(isupper(srcPlayer)&& isupper(destPlayer))
+    if(isupper(srcPlayer) && isupper(destPlayer))
     {
         return 0;
     }
@@ -367,7 +368,8 @@ int checkValidQueen(char board[][SIZE],Move move) {
             }
 
         }
-    }
+}
+    return 0;
 }
 
 int checkValidKnight(char board[][SIZE],Move move)
@@ -583,27 +585,27 @@ int checkValidCapture(char board[][SIZE],Move move)
         //trying to move to free space and say it is capture - not valid
         if(board[move.iDest][move.jDest] == EMPTY)
             return 0;
-        //caapture to your friend is error
+        //capture to your friend is error
         if(checkDifferentColors(board,move) == 0)
         {
             return 0;
         }
         return 1;
     }
-    else if(move.isCapture == 0)
-    {
-        char digit = board[move.iDest][move.jDest];
-        //trying to move to place with enemy without saying it is capture - not valid
-//        if((move.isWhite && islower(digit)) || (!move.isWhite && isupper(digit)))
+//    else if(move.isCapture == 0)
+//    {
+//        char digit = board[move.iDest][move.jDest];
+//        //trying to move to place with enemy without saying it is capture - not valid
+////        if((move.isWhite && islower(digit)) || (!move.isWhite && isupper(digit)))
+////            return 0;
+//        if(digit != EMPTY)
 //            return 0;
-        if(digit != EMPTY)
-            return 0;
-//        if(checkDifferentColors(board,move) == 1)
-//        {
-//            return 0;//Capture without saying it
-//        }
-        return 1;
-    }
+////        if(checkDifferentColors(board,move) == 1)
+////        {
+////            return 0;//Capture without saying it
+////        }
+//        return 1;
+//    }
 }
 
 int isLastRow(char board[][SIZE],Move move)
@@ -783,7 +785,8 @@ int isMate(char pgn[])
         {
             i++;
             cure = pgn[i];
-        }else return 1;
+        }
+        else{return 1;}
     }
     return 0;
 
@@ -794,7 +797,8 @@ char whichPlayer(char pgn[])
     if(isupper(pgn[0]))
     {
         return pgn[0];
-    } else return PAWN;
+    } else
+        return PAWN;
 }
 
 char findSrcCol(char pgn[])
@@ -852,7 +856,7 @@ int isValidMove(char board[][SIZE], Move move)
         }
         case 'Q':
         {
-            if(checkValidQueen(board,move)==0)
+            if(checkValidQueen(board,move) == 0)
                 return 0;
             break;
         }
@@ -879,7 +883,7 @@ int isValidMove(char board[][SIZE], Move move)
     if(checkValidPromotion(board,move) == 0)
         return 0;
 
-    if(!checkValidCapture(board,move))
+    if(checkValidCapture(board,move) == 0)
         return 0;
 
     //TODO: Add check for shach and mat
@@ -913,6 +917,10 @@ Location searchBlackPawn(char board[][SIZE],Move move)
             loc.row = move.iDest - 1;
         }
     }
+    if(board[loc.row][loc.col] != BLACK_PAWN)
+    {
+        loc.isValid =0;
+    }
     return loc;
 }
 
@@ -936,16 +944,17 @@ Location searchWhitePawn(char board[][SIZE],Move move)
         {
             if(board[move.iDest+1][move.jDest] == WHITE_PAWN)
                 loc.row = move.iDest + 1;
-            else
+            else if(board[move.iDest+2][move.jDest] == WHITE_PAWN)
                 loc.row = move.iDest + 2;
-        } else{
+
+        }
+        else{
             loc.row = move.iDest + 1;
         }
     }
     if(board[loc.row][loc.col] != WHITE_PAWN)
     {
         loc.isValid =0;
-
     }
     return loc;
 }
@@ -1282,6 +1291,7 @@ char capitalToLower(char capitalLetter)
     char lowerLetter = capitalLetter + ('a' - 'A');
     return lowerLetter;
 }
+
 void updateBoard(char board[][SIZE],Move move)
 {
     //clean src location
@@ -1337,8 +1347,8 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
     if(!move.hasSrcRow || !move.hasSrcCol)
     {
         Location loc = searchSrc(board,move);
-//        if(loc.isValid == 0)
-//            return 0;
+        if(loc.isValid == 0)
+            return 0;
         if(move.hasSrcRow) {
             move.iSrc = changeCharToIndex(move.srcRow);
             move.jSrc = loc.col;
@@ -1358,12 +1368,11 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
         move.iSrc = changeCharToIndex(move.srcRow);
     }
 
-    if(!isValidMove(board,move))
+    if(isValidMove(board,move) == 0)
         return 0;
 
     updateBoard(board,move);
     return 1;
-
 }
 
 //void printBoardFromFEN(char fen[]){}
