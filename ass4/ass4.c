@@ -501,14 +501,14 @@ int checkValidRook(char board[][SIZE],Move move)
 
         if(result == 'L')
         {
-            for (int i = move.jSrc-1; i >=move.jDest ; i--)
+            for (int i = move.jSrc-1; i >=move.jDest+1 ; i--)
             {
                 if(!(isEmpty(board,move.iSrc,i)))
                     return 0;
             }
         } else {//GO RIGHT
             //check for the next step if the place is empty
-            for (int i = move.jSrc + 1; i <= move.jDest; i++) {
+            for (int i = move.jSrc + 1; i <= move.jDest-1; i++) {
                 if (!(isEmpty(board, move.iSrc, i)))
                     return 0;
             }
@@ -523,7 +523,7 @@ int checkValidRook(char board[][SIZE],Move move)
         if(result == 'U')
         {
             //check for the next step if the place is empty
-            for (int i = move.iSrc-1 ; i >= move.iDest ; i--)
+            for (int i = move.iSrc-1 ; i >= move.iDest+1 ; i--)
             {
                 if(!(isEmpty(board,i,move.jSrc)))
                     return 0;
@@ -531,7 +531,7 @@ int checkValidRook(char board[][SIZE],Move move)
         } else
         {
             //check for the next step if the place is empty
-            for (int i = move.iSrc+1 ; i <= move.iDest ; i++)
+            for (int i = move.iSrc+1 ; i <= move.iDest-1 ; i++)
             {
                 if(!(isEmpty(board,i,move.jSrc)))
                     return 0;
@@ -550,6 +550,7 @@ int checkValidQueen(char board[][SIZE],Move move)
     else
         return 0;
 }
+
 int checkValidPawn(char board[][SIZE],Move move)
 {
     //capture and walking straight - error!!!
@@ -604,7 +605,7 @@ int checkValidCapture(char board[][SIZE],Move move)
         }
         return 1;
     }
-    //TODO: לא יודעת למה הורדת את זה זה דפק הכל, תתקשר אלי אם אתה לא מבין מה עשינו פהלאביו דובי
+        //TODO: לא יודעת למה הורדת את זה זה דפק הכל, תתקשר אלי אם אתה לא מבין מה עשינו פהלאביו דובי
     else if(move.isCapture == 0)
     {
         char digit = board[move.iDest][move.jDest];
@@ -978,33 +979,69 @@ Location searchWhitePawn(char board[][SIZE],Move move)
 Location searchRook(char board[][SIZE],Move move,char player)
 {
     Location loc;
-    int flag = 0;
-    for (int j = 0; j < SIZE; ++j)
+    loc.isValid = 0;//רגע אני חושבץ
+    int flag = 0; // זאת הטעות, צריך להפוך אותו ל1 כאשר מוצאים אחרת הוא חושב שאין לו בכלל- אל תיגע משנה עכשיו
+    //שורה מהיעד כלפי שמאלה
+    for (int j = move.jDest-1; j >= 0; --j)//Whatsup אבל הוא יכול ללכת לשני הכיוונים לא? מה זה משנה,טוב תעשי ונראה אם זה עובד
     {
         if(board[move.iDest][j]==player)
         {
             loc.col = j;
             loc.row = move.iDest;
             flag=1;
-            break;
+            loc.isValid = 1;//we found it
+//            break;
+            return loc;
         }
         if(board[move.iDest][j]!=EMPTY)
             break;
     }
-    if(!flag)
+//שורה מהיעד כלפי ימינה
+    for (int j = move.jDest+1; j <SIZE; ++j)//Whatsup אבל הוא יכול ללכת לשני הכיוונים לא? מה זה משנה,טוב תעשי ונראה אם זה עובד
     {
-        for (int i = 0; i < SIZE; ++i)
+        if(board[move.iDest][j]==player)
+        {
+            loc.col = j;
+            loc.row = move.iDest;
+            flag=1;
+            loc.isValid = 1;//we found it
+            //break;
+            return loc;
+        }
+        if(board[move.iDest][j]!=EMPTY)
+            break;
+    }
+//    if(!flag)
+//    {
+//טור מהיעד כלפי מטה
+        for (int i = move.iDest+1; i < SIZE; ++i)
         {
             if(board[i][move.jDest]==player)
             {
                 loc.row = i;
                 loc.col = move.jDest;
-                break;
+                loc.isValid = 1;//we found it
+//                break;
+                return loc;
             }
             if(board[i][move.jDest]!=EMPTY)
                 break;
         }
+
+    for (int i = move.iDest-1; i >= 0; --i)//HERE we should find it
+    {
+        if(board[i][move.jDest]==player)
+        {
+            loc.row = i;
+            loc.col = move.jDest;
+            loc.isValid = 1;//we found it
+//                break;
+            return loc;
+        }
+        if(board[i][move.jDest]!=EMPTY)
+            break;
     }
+//    }
     return loc;
 }
 
@@ -1360,7 +1397,7 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
     move.jDest = changeCharToIndex(move.destCol);
     move.iDest = changeCharToIndex(move.destRow);
 
-    if(!move.hasSrcRow || !move.hasSrcCol)
+    if(!move.hasSrcRow || !move.hasSrcCol)//חכה רגע מישהו קרא לי אתה יכול המשיך לדבג בינתיים אני מול המסך, לא לשנות כלום אבל לפני להגיד לי
     {
         Location loc = searchSrc(board,move);
         if(loc.isValid == 0)
