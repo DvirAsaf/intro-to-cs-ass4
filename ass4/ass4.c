@@ -241,25 +241,23 @@ int checkValidKing(char board[][SIZE],Move move)
         return 0;
     if(abs(move.jSrc - move.jDest) > 1)
         return 0;
-    if(abs(move.iSrc - move.iDest)==0)
-    {
-        if(!(isEmpty(board,move.iSrc,move.jDest)))
-            return 0;
-    }
-    else if(abs(move.jSrc - move.jDest)==0)
-    {
-        if(!(isEmpty(board,move.iDest,move.jSrc)))
-            return 0;
-    }
-    else
-    {
-        if(!(isEmpty(board,move.iDest,move.jDest)))
-            return 0;
-    }
+//    if(abs(move.iSrc - move.iDest)==0)
+//    {
+//        if(!(isEmpty(board,move.iSrc,move.jDest)))
+//            return 0;
+//    }
+//    else if(abs(move.jSrc - move.jDest)==0)
+//    {
+//        if(!(isEmpty(board,move.iDest,move.jSrc)))
+//            return 0;
+//    }
+//    else
+//    {
+//        if(!(isEmpty(board,move.iDest,move.jDest)))
+//            return 0;
+//    }
     return 1;
 }
-
-
 
 //int checkValidQueen(char board[][SIZE],Move move) {
 //    int stepsRow = abs(move.jSrc - move.jDest);
@@ -485,7 +483,6 @@ int checkValidBishop(char board[][SIZE],Move move)
     }
     return 1;
 }
-
 
 int checkValidRook(char board[][SIZE],Move move)
 {
@@ -978,59 +975,28 @@ Location searchWhitePawn(char board[][SIZE],Move move)
 
 Location searchRook(char board[][SIZE],Move move,char player)
 {
-    Location loc;
-    loc.isValid = 0;//רגע אני חושבץ
-    int flag = 0; // זאת הטעות, צריך להפוך אותו ל1 כאשר מוצאים אחרת הוא חושב שאין לו בכלל- אל תיגע משנה עכשיו
-    //שורה מהיעד כלפי שמאלה
-    for (int j = move.jDest-1; j >= 0; --j)//Whatsup אבל הוא יכול ללכת לשני הכיוונים לא? מה זה משנה,טוב תעשי ונראה אם זה עובד
-    {
-        if(board[move.iDest][j]==player)
-        {
-            loc.col = j;
-            loc.row = move.iDest;
-            flag=1;
-            loc.isValid = 1;//we found it
-//            break;
-            return loc;
-        }
-        if(board[move.iDest][j]!=EMPTY)
-            break;
-    }
-//שורה מהיעד כלפי ימינה
-    for (int j = move.jDest+1; j <SIZE; ++j)//Whatsup אבל הוא יכול ללכת לשני הכיוונים לא? מה זה משנה,טוב תעשי ונראה אם זה עובד
-    {
-        if(board[move.iDest][j]==player)
-        {
-            loc.col = j;
-            loc.row = move.iDest;
-            flag=1;
-            loc.isValid = 1;//we found it
-            //break;
-            return loc;
-        }
-        if(board[move.iDest][j]!=EMPTY)
-            break;
-    }
-//    if(!flag)
-//    {
-//טור מהיעד כלפי מטה
-        for (int i = move.iDest+1; i < SIZE; ++i)
-        {
-            if(board[i][move.jDest]==player)
-            {
-                loc.row = i;
-                loc.col = move.jDest;
-                loc.isValid = 1;//we found it
-//                break;
-                return loc;
-            }
-            if(board[i][move.jDest]!=EMPTY)
-                break;
-        }
 
-    for (int i = move.iDest-1; i >= 0; --i)//HERE we should find it
+    Location loc;
+    loc.isValid = 0;
+    int flag = 0;
+    //טור מהיעד כלפי מעלה
+    for (int i = move.iDest-1; i >= 0; i--)//HERE we should find it
     {
-        if(board[i][move.jDest]==player)
+        if(board[i][move.jDest] == player)
+        {
+            loc.row = i;
+            loc.col = move.jDest;
+            loc.isValid = 1;//we found it
+//                break;
+            return loc;
+        }
+        if(board[i][move.jDest] != EMPTY)
+            break;
+    }
+    //טור מהיעד כלפי מטה
+    for (int i = move.iDest+1; i < SIZE; i++)
+    {
+        if(board[i][move.jDest] == player)
         {
             loc.row = i;
             loc.col = move.jDest;
@@ -1041,7 +1007,36 @@ Location searchRook(char board[][SIZE],Move move,char player)
         if(board[i][move.jDest]!=EMPTY)
             break;
     }
-//    }
+    //שורה מהיעד כלפי שמאלה
+    for (int j = move.jDest-1; j >= 0; j--)
+    {
+        if(board[move.iDest][j] == player)
+        {
+            loc.col = j;
+            loc.row = move.iDest;
+            flag = 1;
+            loc.isValid = 1;//we found it
+//            break;
+            return loc;
+        }
+        if(board[move.iDest][j] != EMPTY)
+            break;
+    }
+//שורה מהיעד כלפי ימינה
+    for (int j = move.jDest+1; j < SIZE; j++)
+    {
+        if(board[move.iDest][j] == player)
+        {
+            loc.col = j;
+            loc.row = move.iDest;
+            flag = 1;
+            loc.isValid = 1;//we found it
+            //break;
+            return loc;
+        }
+        if(board[move.iDest][j] != EMPTY)
+            break;
+    }
     return loc;
 }
 
@@ -1053,9 +1048,10 @@ Location searchKing(char board[][SIZE],Move move)
     else
         playerColor = BLACK_KING;
     Location loc;
-    for (int i = move.iDest-1; i <=move.iDest+1 ; ++i)
+    loc.isValid = 0;
+    for (int i = move.iDest-1; i <=move.iDest+1 ; i++)
     {
-        for (int j = move.jDest-1; j <= move.jDest+1 ; ++j)
+        for (int j = move.jDest-1; j <= move.jDest+1 ; j++)
         {
             if(i<0 || i>=SIZE || j<0 || j>=SIZE)
                 continue;
@@ -1063,6 +1059,7 @@ Location searchKing(char board[][SIZE],Move move)
             {
                 loc.col = j;
                 loc.row = i;
+                loc.isValid = 1;
                 break;
             }
         }
@@ -1397,7 +1394,7 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
     move.jDest = changeCharToIndex(move.destCol);
     move.iDest = changeCharToIndex(move.destRow);
 
-    if(!move.hasSrcRow || !move.hasSrcCol)//חכה רגע מישהו קרא לי אתה יכול המשיך לדבג בינתיים אני מול המסך, לא לשנות כלום אבל לפני להגיד לי
+    if(!move.hasSrcRow || !move.hasSrcCol)
     {
         Location loc = searchSrc(board,move);
         if(loc.isValid == 0)
