@@ -975,67 +975,135 @@ Location searchWhitePawn(char board[][SIZE],Move move)
 
 Location searchRook(char board[][SIZE],Move move,char player)
 {
-
     Location loc;
     loc.isValid = 0;
     int flag = 0;
-    //טור מהיעד כלפי מעלה
-    for (int i = move.iDest-1; i >= 0; i--)//HERE we should find it
+    if(move.hasSrcCol)
     {
-        if(board[i][move.jDest] == player)
+        move.jSrc = changeCharToIndex(move.srcCol);
+        //טור מהיעד כלפי מעלה
+        for (int i = move.jSrc ; i >= 0 ; i--)//HERE we should find it
         {
-            loc.row = i;
-            loc.col = move.jDest;
-            loc.isValid = 1;//we found it
+            if(board[i][move.jSrc] == player)
+            {
+                loc.row = i;
+                loc.col = move.jSrc;
+                loc.isValid = 1;//we found it
 //                break;
-            return loc;
-        }
-        if(board[i][move.jDest] != EMPTY)
-            break;
-    }
-    //טור מהיעד כלפי מטה
-    for (int i = move.iDest+1; i < SIZE; i++)
-    {
-        if(board[i][move.jDest] == player)
-        {
-            loc.row = i;
-            loc.col = move.jDest;
-            loc.isValid = 1;//we found it
+                return loc;
+            }
+//            if(board[i][move.jSrc] != EMPTY)
 //                break;
-            return loc;
         }
-        if(board[i][move.jDest]!=EMPTY)
-            break;
-    }
-    //שורה מהיעד כלפי שמאלה
-    for (int j = move.jDest-1; j >= 0; j--)
-    {
-        if(board[move.iDest][j] == player)
+        //טור מהיעד כלפי מטה
+        for (int i = move.jSrc; i < SIZE; i++)
         {
-            loc.col = j;
-            loc.row = move.iDest;
-            flag = 1;
-            loc.isValid = 1;//we found it
+            if(board[i][move.jSrc] == player)
+            {
+                loc.row = i;
+                loc.col = move.jSrc;
+                loc.isValid = 1;//we found it
+//                break;
+                return loc;
+            }
+//            if(board[i][move.jSrc]!=EMPTY)
+//                break;
+        }
+    }
+    else if (move.hasSrcRow)
+    {
+        move.iSrc = changeCharToIndex(move.srcRow);
+        //שורה מהיעד כלפי ימינה
+        for (int j = move.iSrc; j < SIZE; j++)
+        {
+            if(board[move.iSrc][j] == player)
+            {
+                loc.col = j;
+                loc.row = move.iSrc;
+                flag = 1;
+                loc.isValid = 1;//we found it
+                //break;
+                return loc;
+            }
+//            if(board[move.iSrc][j] != EMPTY)
+//                break;
+        }
+        //שורה מהיעד כלפי שמאלה
+        for (int j = move.iSrc; j >= 0; j--)
+        {
+            if(board[move.iSrc][j] == player)
+            {
+                loc.col = j;
+                loc.row = move.iSrc;
+                flag = 1;
+                loc.isValid = 1;//we found it
 //            break;
-            return loc;
+                return loc;
+            }
+//            if(board[move.iSrc][j] != EMPTY)
+//                break;
         }
-        if(board[move.iDest][j] != EMPTY)
-            break;
     }
-//שורה מהיעד כלפי ימינה
-    for (int j = move.jDest+1; j < SIZE; j++)
+    else
     {
-        if(board[move.iDest][j] == player)
+        //טור מהיעד כלפי מעלה
+        for (int i = move.iDest-1; i >= 0; i--)//HERE we should find it
         {
-            loc.col = j;
-            loc.row = move.iDest;
-            flag = 1;
-            loc.isValid = 1;//we found it
-            //break;
-            return loc;
+            if(board[i][move.jDest] == player)
+            {
+                loc.row = i;
+                loc.col = move.jDest;
+                loc.isValid = 1;//we found it
+//                break;
+                return loc;
+            }
+//            if(board[i][move.jDest] != EMPTY)
+//                break;
         }
-        if(board[move.iDest][j] != EMPTY)
-            break;
+        //טור מהיעד כלפי מטה
+        for (int i = move.iDest+1; i < SIZE; i++)
+        {
+            if(board[i][move.jDest] == player)
+            {
+                loc.row = i;
+                loc.col = move.jDest;
+                loc.isValid = 1;//we found it
+//                break;
+                return loc;
+            }
+//            if(board[i][move.jDest]!=EMPTY)
+//                break;
+        }
+        //שורה מהיעד כלפי שמאלה
+        for (int j = move.jDest-1; j >= 0; j--)
+        {
+            if(board[move.iDest][j] == player)
+            {
+                loc.col = j;
+                loc.row = move.iDest;
+                flag = 1;
+                loc.isValid = 1;//we found it
+//            break;
+                return loc;
+            }
+//            if(board[move.iDest][j] != EMPTY)
+//                break;
+        }
+//שורה מהיעד כלפי ימינה
+        for (int j = move.jDest+1; j < SIZE; j++)
+        {
+            if(board[move.iDest][j] == player)
+            {
+                loc.col = j;
+                loc.row = move.iDest;
+                flag = 1;
+                loc.isValid = 1;//we found it
+                //break;
+                return loc;
+            }
+//            if(board[move.iDest][j] != EMPTY)
+//                break;
+        }
     }
     return loc;
 }
