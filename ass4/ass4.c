@@ -57,10 +57,9 @@ typedef struct {
 
 typedef struct
 {
-    int col;
-    int row;
+    int col,row;
     char player;
-}Check;
+}kingSafe;
 
 int isDigit(char digit)
 {
@@ -855,8 +854,9 @@ char findSrcCol(char pgn[])
  * also not valid
  */
 
+
 int checkValidPromotion(char board[][SIZE],Move move) {
-    if(move.isPromotion){
+    if(move.isPromotion == 1){
         //validate the player is pawn in last raw.
         if(isLastRow(board,move) && move.player==PAWN){
             return 1;
@@ -870,62 +870,6 @@ int checkValidPromotion(char board[][SIZE],Move move) {
         else
             return 1;
     }
-}
-
-int isValidMove(char board[][SIZE], Move move)
-{
-    switch (move.player) {
-        case 'P':
-        {
-            if(!checkValidPawn(board,move))
-                return  0;
-            break;
-        }
-        case 'R':
-        {
-            if(checkValidRook(board,move) == 0)
-                return 0;
-            break;
-        }
-        case 'Q':
-        {
-            if(checkValidQueen(board,move) == 0)
-                return 0;
-            break;
-        }
-        case 'K':
-        {
-            if(checkValidKing(board,move)==0)
-                return 0;
-            break;
-        }
-        case 'B':
-        {
-            //TODO: נופל פה
-            if(checkValidBishop(board,move)==0)
-                return 0;
-            break;
-        }
-        case 'N':
-        {
-            if(checkValidKnight(board,move) == 0)
-                return 0;
-            break;
-        }
-    }
-    if(checkValidPromotion(board,move) == 0)
-        return 0;
-
-    if(checkValidCapture(board,move) == 0)
-        return 0;
-
-//    //TODO: Add check for shach and mat
-//    if(checkValidCheck(board,move) == 0)
-//        return 0;
-
-
-
-    return 1;
 }
 
 Location searchBlackPawn(char board[][SIZE],Move move)
@@ -1159,6 +1103,8 @@ Location searchKing(char board[][SIZE],Move move)
     return loc;
 }
 
+
+
 Location searchBishop(char board[][SIZE],Move move,char player)
 {
     Location loc;
@@ -1166,6 +1112,7 @@ Location searchBishop(char board[][SIZE],Move move,char player)
     loc.col = -1;
     int flag = 0;
     int j = move.jDest-1;
+    
     //diagnol line from left corner to right down
     for (int i = move.iDest - 1; i >=0 ; i--)
     {
@@ -1436,10 +1383,6 @@ Location searchSrc(char board[][SIZE],Move move)
     return loc;
 }
 
-void changeBoard(char board[][SIZE])
-{
-    board[0][0] = 'c';
-}
 
 char capitalToLower(char capitalLetter)
 {
@@ -1447,23 +1390,672 @@ char capitalToLower(char capitalLetter)
     return lowerLetter;
 }
 
-void updateBoard(char board[][SIZE],Move move)
+int isValidMove(char board[][SIZE],Move move)
+{
+    switch (move.player)
+    {
+        case 'P':
+        case 'p':
+        {
+            if(!checkValidPawn(board,move))
+                return  0;
+            break;
+        }
+        case 'R':
+        case 'r':
+        {
+            if(checkValidRook(board,move) == 0)
+                return 0;
+            break;
+        }
+        case 'Q':
+        case 'q':
+        {
+            if(checkValidQueen(board,move) == 0)
+                return 0;
+            break;
+        }
+        case 'K':
+        case 'k':
+        {
+            if(checkValidKing(board,move)==0)
+                return 0;
+            break;
+        }
+        case 'B':
+        case 'b':
+        {
+            //TODO: נופל פה
+            if(checkValidBishop(board,move)==0)
+                return 0;
+            break;
+        }
+        case 'N':
+        case 'n':
+        {
+            if(checkValidKnight(board,move) == 0)
+                return 0;
+            break;
+        }
+    }
+
+    if(checkValidPromotion(board,move) == 0)
+        return 0;
+
+    if(checkValidCapture(board,move) == 0)
+        return 0;
+
+//    if(isKingSafe2(board,move) == 0)
+////        return 0;
+
+//    //TODO: Add check for shach and mat
+//    if(checkValidCheck(board,move) == 0)
+//        return 0;
+
+    return 1;
+}
+
+int isKingSafe2(char board[][SIZE],Move move)
+{
+    Move moveKing;
+    char kingColor;
+    if(move.isWhite)
+        kingColor = WHITE_KING;
+    else
+        kingColor = BLACK_KING;
+    for (int i = 0; i < SIZE; ++i)
+    {
+        for (int j = 0; j < SIZE; ++j)
+        {
+            if(board[i][j] == kingColor)
+            {
+                moveKing.iDest = i;
+                moveKing.jDest = j;
+                break;
+            }
+        }
+    }
+
+    if(move.isWhite)
+    {
+        for (int i = 0; i < SIZE ; ++i)
+        {
+            for (int j = 0; j < SIZE ; ++j)
+            {
+                char player = board[i][j];
+                if(player == WHITE_KING)
+                    continue;
+                if(player == BLACK_KING)
+                {
+                    moveKing.player = BLACK_KING;
+                }else if(player == BLACK_KNIGHT){
+                    moveKing.player = BLACK_KNIGHT;
+                }else if(player == BLACK_QUEEN){
+                    moveKing.player = BLACK_QUEEN;
+                }else if(player == BLACK_BISHOP){
+                    moveKing.player = BLACK_BISHOP;
+                }else if(player == BLACK_PAWN){
+                    moveKing.player = BLACK_PAWN;
+                }else if(player == BLACK_ROOK){
+                    moveKing.player = BLACK_ROOK;
+                }
+
+                moveKing.iSrc = i;
+                moveKing.jSrc = j;
+                moveKing.isCapture = 1;
+                moveKing.isWhite = 0;
+                if(isValidMove(board,moveKing) == 1){
+                    //המלך מאויים ולכן אפשר לעצור את הסריקה ולהחזיר אפס
+                    return 0;
+                }
+            }
+        }
+        return 1;
+    }
+    else{
+
+        for (int i = 0; i < SIZE ; ++i)
+        {
+            for (int j = 0; j < SIZE ; ++j)
+            {
+                char player = board[i][j];
+                if(player == BLACK_KING)
+                    continue;
+                if(player == WHITE_KING)
+                {
+                    moveKing.player = WHITE_KING;
+                }else if(player == WHITE_KNIGHT){
+                    moveKing.player = WHITE_KNIGHT;
+                }else if(player == WHITE_QUEEN){
+                    moveKing.player = WHITE_QUEEN;
+                }else if(player == WHITE_BISHOP){
+                    moveKing.player = WHITE_BISHOP;
+                }else if(player == WHITE_PAWN){
+                    moveKing.player = WHITE_PAWN;
+                }else if(player == WHITE_ROOK){
+                    moveKing.player = WHITE_ROOK;
+                }
+
+                moveKing.iSrc = i;
+                moveKing.jSrc = j;
+                moveKing.isCapture = 1;
+                moveKing.isWhite = 1;
+                if(isValidMove(board,moveKing) == 1){
+                    //המלך מאויים ולכן אפשר לעצור את הסריקה ולהחזיר אפס
+                    return 0;
+                }
+            }
+        }
+        return 1;
+    }
+
+
+
+
+}
+
+int isEnemyKingSafe(char board[][SIZE],int isWhite)
+{
+    Move moveKing;
+    char enemyKingColor;
+    if(isWhite)
+        enemyKingColor = BLACK_KING;
+    else
+        enemyKingColor = WHITE_KING;
+    for (int i = 0; i < SIZE; ++i)
+    {
+        for (int j = 0; j < SIZE; ++j)
+        {
+            if(board[i][j] == enemyKingColor)
+            {
+                moveKing.iDest = i;
+                moveKing.jDest = j;
+                break;
+            }
+        }
+    }
+
+    if(!isWhite)
+    {
+        for (int i = 0; i < SIZE ; ++i)
+        {
+            for (int j = 0; j < SIZE ; ++j)
+            {
+                char player = board[i][j];
+//                if(player == WHITE_KING)
+//                    continue;
+                if(player == BLACK_KING)
+                {
+                    moveKing.player = BLACK_KING;
+                }else if(player == BLACK_KNIGHT){
+                    moveKing.player = BLACK_KNIGHT;
+                }else if(player == BLACK_QUEEN){
+                    moveKing.player = BLACK_QUEEN;
+                }else if(player == BLACK_BISHOP){
+                    moveKing.player = BLACK_BISHOP;
+                }else if(player == BLACK_PAWN){
+                    moveKing.player = BLACK_PAWN;
+                }else if(player == BLACK_ROOK){
+                    moveKing.player = BLACK_ROOK;
+                }
+                if(player == BLACK_KING || player == BLACK_KNIGHT || player == BLACK_QUEEN || player == BLACK_BISHOP ||
+                   player == BLACK_ROOK || player == BLACK_PAWN )
+                {
+                    moveKing.iSrc = i;
+                    moveKing.jSrc = j;
+                    moveKing.isCapture = 1;
+                    moveKing.isWhite = 0;
+                    if(isValidMove(board,moveKing) == 1){
+                        //המלך מאויים ולכן אפשר לעצור את הסריקה ולהחזיר אפס
+                        return 0;
+                    }
+                }
+
+            }
+        }
+        return 1;
+    }
+    else{
+
+        for (int i = 0; i < SIZE ; ++i)
+        {
+            for (int j = 0; j < SIZE ; ++j)
+            {
+                char player = board[i][j];
+//                if(player == BLACK_KING)
+//                    continue;
+                if(player == WHITE_KING)
+                {
+                    moveKing.player = WHITE_KING;
+                }else if(player == WHITE_KNIGHT){
+                    moveKing.player = WHITE_KNIGHT;
+                }else if(player == WHITE_QUEEN){
+                    moveKing.player = WHITE_QUEEN;
+                }else if(player == WHITE_BISHOP){
+                    moveKing.player = WHITE_BISHOP;
+                }else if(player == WHITE_PAWN){
+                    moveKing.player = WHITE_PAWN;
+                }else if(player == WHITE_ROOK){
+                    moveKing.player = WHITE_ROOK;
+                }
+
+                if(player == WHITE_KING || player == WHITE_KNIGHT || player == WHITE_QUEEN || player == WHITE_BISHOP ||
+                player == WHITE_PAWN || player == WHITE_ROOK ){
+                    moveKing.iSrc = i;
+                    moveKing.jSrc = j;
+                    moveKing.isCapture = 1;
+                    moveKing.isWhite = 0;
+                    if(isValidMove(board,moveKing) == 1){
+                        //המלך מאויים ולכן אפשר לעצור את הסריקה ולהחזיר אפס
+                        return 0;
+                    }
+                }
+
+            }
+        }
+        return 1;
+    }
+
+
+
+
+}
+
+int isKingSafe(char board[][SIZE],Move move)
+{
+    //חיפוש המלך הלבן
+    if(move.isWhite == 1)
+    {
+        for (int i = 0; i < SIZE ; i++)
+        {
+            for (int j = 0 ; j < SIZE ; j++)
+            {
+                if(board[i][j]== WHITE_KING)
+                {
+                    move.iDest = i;
+                    move.jDest = j;
+                    break;
+                }
+            }
+        }
+        //בדיקה שאין מעלי רגלי שיכול לתקוף את המלך והוא משבצת ממנו
+        if(board[move.iDest-1][move.jDest-1]==BLACK_PAWN || board[move.iDest-1][move.jDest+1]==BLACK_PAWN)
+            return 0;
+        // בדיקה שבאותו שורה אין מלכה או צריח לכיוון ימין
+        for (int k = move.jDest+1 ; k < SIZE ; k++)
+        {
+            if(board[move.iDest][k] == BLACK_ROOK || board[move.iDest][k] == BLACK_QUEEN)
+            {
+                if(board[move.iDest][k] == BLACK_ROOK)
+                    move.player = BLACK_ROOK;
+                else move.player = BLACK_QUEEN;
+                move.jSrc = k;
+                move.iSrc = move.iDest;
+                move.isWhite = 0;
+                move.isCapture = 1;
+                if(isValidMove(board,move))
+                    return 0;
+            }
+        }
+        // בדיקה שבאותו שורה אין מלכה או צריח לכיוון שמאל
+        for (int k = move.jDest-1 ; k >= 0 ; k--)
+        {
+            if(board[move.iDest][k] == BLACK_ROOK || board[move.iDest][k] == BLACK_QUEEN)
+            {
+                if(board[move.iDest][k] == BLACK_ROOK)
+                    move.player = BLACK_ROOK;
+                else move.player = BLACK_QUEEN;
+                move.jSrc = k;
+                move.iSrc = move.iDest;
+                move.isWhite = 0;
+                move.isCapture = 1;
+                if(isValidMove(board,move))
+                    return 0;
+            }
+        }
+        // בדיקה שבאותו תור אין מלכה או צריח לכיוון מטה
+        for (int k = move.iDest+1 ; k < SIZE ; k++)
+        {
+            if(board[k][move.jDest] == BLACK_ROOK || board[k][move.jDest] == BLACK_QUEEN)
+            {
+                if(board[k][move.jDest] == BLACK_ROOK)
+                    move.player = BLACK_ROOK;
+                else move.player = BLACK_QUEEN;
+                move.iSrc = k;
+                move.jSrc = move.jDest;
+                move.isWhite = 0;
+                move.isCapture = 1;
+                if(isValidMove(board,move))
+                    return 0;
+            }
+        }
+        // בדיקה שבאותו תור אין מלכה או צריח לכיוון מעלה
+        for (int k = move.iDest-1 ; k >= 0 ; k--)
+        {
+            if(board[k][move.jDest] == BLACK_ROOK || board[k][move.jDest] == BLACK_QUEEN)
+            {
+                if(board[k][move.jDest] == BLACK_ROOK)
+                    move.player = BLACK_ROOK;
+                else move.player = BLACK_QUEEN;
+                move.iSrc = k;
+                move.jSrc = move.jDest;
+                move.isWhite = 0;
+                move.isCapture = 1;
+                if(isValidMove(board,move))
+                    return 0;
+            }
+        }
+        //בדיקה שאין באלכסון לכיון שמאל למעלה כלים עויינים
+        for (int l = move.iDest-1; l >= 0 ; l--)
+        {
+            for (int t = move.jDest-1; t >=0 ; t--)
+            {
+                if(board[l][t] == BLACK_QUEEN || board[l][t] == BLACK_BISHOP)
+                {
+                    if(board[l][t] == BLACK_BISHOP)
+                        move.player = BLACK_BISHOP;
+                    else move.player = BLACK_QUEEN;
+                    move.jSrc = t;
+                    move.iSrc = l;
+                    move.isWhite = 0;
+                    move.isCapture = 1;
+                    if(isValidMove(board,move))
+                        return 0;
+                }
+            }
+        }
+        //בדיקה שאין אלכסון לכיוןן שמאל למעלה כלים עויינים
+        for (int l = move.iDest-1; l >= 0 ; l--)
+        {
+            for (int t = move.jDest+1; t <SIZE ; t++)
+            {
+                if(board[l][t] == BLACK_QUEEN || board[l][t] == BLACK_BISHOP)
+                {
+                    if(board[l][t] == BLACK_BISHOP)
+                        move.player = BLACK_BISHOP;
+                    else move.player = BLACK_QUEEN;
+                    move.jSrc = t;
+                    move.iSrc = l;
+                    move.isWhite = 0;
+                    move.isCapture = 1;
+                    if(isValidMove(board,move))
+                        return 0;
+                }
+            }
+        }
+        //בדיקה שאין באלכסון לכיוון שמאל למטה כלים עוינים
+        for (int l = move.iDest+1; l < SIZE ; l++)
+        {
+            for (int t = move.jDest-1; t >=0 ; t--)
+            {
+                if(board[l][t] == BLACK_QUEEN || board[l][t] == BLACK_BISHOP)
+                {
+                    if(board[l][t] == BLACK_BISHOP)
+                        move.player = BLACK_BISHOP;
+                    else move.player = BLACK_QUEEN;
+                    move.jSrc = t;
+                    move.iSrc = l;
+                    move.isWhite = 0;
+                    move.isCapture = 1;
+                    if(isValidMove(board,move))
+                        return 0;
+                }
+            }
+        }
+        //בדיקה שאין באלכסון לכיון ימין למטה כלים עויינים
+        for (int l = move.iDest-1; l <SIZE ; l++)
+        {
+            for (int t = move.jDest-1; t <SIZE ; t++)
+            {
+                if(board[l][t] == BLACK_QUEEN || board[l][t] == BLACK_BISHOP)
+                {
+                    if(board[l][t] == BLACK_BISHOP)
+                        move.player = BLACK_BISHOP;
+                    else move.player = BLACK_QUEEN;
+                    move.jSrc = t;
+                    move.iSrc = l;
+                    move.isWhite = 0;
+                    move.isCapture = 1;
+                    if(isValidMove(board,move))
+                        return 0;
+                }
+            }
+        }
+        //בדיקה שהפרש לא יכול לתקוף את המלך
+        if(board[move.iDest-2][move.jDest-1]==BLACK_KNIGHT)
+            return 0;
+        if(board[move.iDest-2][move.jDest+1]==BLACK_KNIGHT)
+            return 0;
+        if(board[move.iDest+2][move.jDest-1]==BLACK_KNIGHT)
+            return 0;
+        if(board[move.iDest+2][move.jDest+1]==BLACK_KNIGHT)
+            return 0;
+        if(board[move.iDest-1][move.jDest-2]==BLACK_KNIGHT)
+            return 0;
+        if(board[move.iDest+1][move.jDest-2]==BLACK_KNIGHT)
+            return 0;
+        if(board[move.iDest-1][move.jDest+2]==BLACK_KNIGHT)
+            return 0;
+        if(board[move.iDest+1][move.jDest+2]==BLACK_KNIGHT)
+            return 0;
+    }
+        //חיפוש המלך השחור
+    else if (move.isWhite == 0)
+    {
+        for (int i = 0; i < SIZE ; i++)
+        {
+            for (int j = 0 ; j < SIZE ; j++)
+            {
+                if(board[i][j]== BLACK_KING)
+                {
+                    move.iDest = i;
+                    move.jDest = j;
+                    break;
+                }
+            }
+        }
+        //בדיקה שאין מעלי רגלי שיכול לתקוף את המלך והוא משבצת ממנו
+        if(board[move.iDest+1][move.jDest-1]==WHITE_PAWN || board[move.iDest+1][move.jDest+1]==WHITE_PAWN)
+            return 0;
+
+        // בדיקה שבאותו שורה אין מלכה או צריח לכיוון ימין
+        for (int k = move.jDest+1 ; k < SIZE ; k++)
+        {
+            if(board[move.iDest][k] == WHITE_ROOK || board[move.iDest][k] == WHITE_QUEEN)
+            {
+                if(board[move.iDest][k] == WHITE_ROOK)
+                    move.player = WHITE_ROOK;
+                else move.player = WHITE_QUEEN;
+                move.jSrc = k;
+                move.iSrc = move.iDest;
+                move.isWhite = 1;
+                move.isCapture = 1;
+                if(isValidMove(board,move))
+                    return 0;
+            }
+        }
+        // בדיקה שבאותו שורה אין מלכה או צריח לכיוון שמאל
+        for (int k = move.jDest-1 ; k >= 0 ; k--)
+        {
+            if(board[move.iDest][k] == WHITE_ROOK || board[move.iDest][k] == WHITE_QUEEN)
+            {
+                if(board[move.iDest][k] == WHITE_ROOK)
+                    move.player = WHITE_ROOK;
+                else move.player = WHITE_QUEEN;
+                move.jSrc = k;
+                move.iSrc = move.iDest;
+                move.isWhite = 1;
+                move.isCapture = 1;
+                if(isValidMove(board,move))
+                    return 0;
+            }
+        }
+        // בדיקה שבאותו תור אין מלכה או צריח לכיוון מטה
+        for (int k = move.iDest+1 ; k < SIZE ; k++)
+        {
+            if(board[k][move.jDest] == WHITE_ROOK || board[k][move.jDest] == WHITE_QUEEN)
+            {
+                if(board[k][move.jDest] == WHITE_ROOK)
+                    move.player = WHITE_ROOK;
+                else move.player = WHITE_QUEEN;
+                move.iSrc = k;
+                move.jSrc = move.jDest;
+                move.isWhite = 1;
+                move.isCapture = 1;
+                if(isValidMove(board,move))
+                    return 0;
+            }
+        }
+        // בדיקה שבאותו תור אין מלכה או צריח לכיוון מעלה
+        for (int k = move.iDest-1 ; k >= 0 ; k--)
+        {
+            if(board[k][move.jDest] == WHITE_ROOK || board[k][move.jDest] == WHITE_QUEEN)
+            {
+                if(board[k][move.jDest] == WHITE_ROOK)
+                    move.player = WHITE_ROOK;
+                else move.player = WHITE_QUEEN;
+                move.iSrc = k;
+                move.jSrc = move.jDest;
+                move.isWhite = 1;
+                move.isCapture = 1;
+                if(isValidMove(board,move))
+                    return 0;
+            }
+        }
+        //בדיקה שאין באלכסון לכיון שמאל למעלה כלים עויינים
+        for (int l = move.iDest-1; l >= 0 ; l--)
+        {
+            for (int t = move.jDest-1; t >=0 ; t--)
+            {
+                if(board[l][t] == WHITE_QUEEN || board[l][t] == WHITE_BISHOP)
+                {
+                    if(board[l][t] == WHITE_BISHOP)
+                        move.player = WHITE_BISHOP;
+                    else move.player = WHITE_QUEEN;
+                    move.jSrc = t;
+                    move.iSrc = l;
+                    move.isWhite = 1;
+                    move.isCapture = 1;
+                    if(isValidMove(board,move))
+                        return 0;
+                }
+            }
+        }
+        //בדיקה שאין אלכסון לכיוןן שמאל למעלה כלים עויינים
+        for (int l = move.iDest-1; l >= 0 ; l--)
+        {
+            for (int t = move.jDest+1; t <SIZE ; t++)
+            {
+                if(board[l][t] == WHITE_QUEEN || board[l][t] == WHITE_BISHOP)
+                {
+                    if(board[l][t] == WHITE_BISHOP)
+                        move.player = WHITE_BISHOP;
+                    else move.player = WHITE_QUEEN;
+                    move.jSrc = t;
+                    move.iSrc = l;
+                    move.isWhite = 1;
+                    move.isCapture = 1;
+                    if(isValidMove(board,move))
+                        return 0;
+                }
+            }
+        }
+        //בדיקה שאין באלכסון לכיוון שמאל למטה כלים עוינים
+        for (int l = move.iDest+1; l < SIZE ; l++)
+        {
+            for (int t = move.jDest-1; t >=0 ; t--)
+            {
+                if(board[l][t] == WHITE_QUEEN || board[l][t] == WHITE_BISHOP)
+                {
+                    if(board[l][t] == WHITE_BISHOP)
+                        move.player = WHITE_BISHOP;
+                    else move.player = WHITE_QUEEN;
+                    move.jSrc = t;
+                    move.iSrc = l;
+                    move.isWhite = 1;
+                    move.isCapture = 1;
+                    if(isValidMove(board,move))
+                        return 0;
+                }
+            }
+        }
+        //בדיקה שאין באלכסון לכיון ימין למטה כלים עויינים
+        for (int l = move.iDest-1; l <SIZE ; l++)
+        {
+            for (int t = move.jDest-1; t <SIZE ; t++)
+            {
+                if(board[l][t] == WHITE_QUEEN || board[l][t] == WHITE_BISHOP)
+                {
+                    if(board[l][t] == WHITE_BISHOP)
+                        move.player = WHITE_BISHOP;
+                    else move.player = WHITE_QUEEN;
+                    move.jSrc = t;
+                    move.iSrc = l;
+                    move.isWhite = 1;
+                    move.isCapture = 1;
+                    if(isValidMove(board,move))
+                        return 0;
+                }
+            }
+        }
+        //בדיקה שהפרש לא יכול לתקוף את המלך
+        if(board[move.iDest-2][move.jDest-1]==WHITE_KNIGHT)
+            return 0;
+        if(board[move.iDest-2][move.jDest+1]==WHITE_KNIGHT)
+            return 0;
+        if(board[move.iDest+2][move.jDest-1]==WHITE_KNIGHT)
+            return 0;
+        if(board[move.iDest+2][move.jDest+1]==WHITE_KNIGHT)
+            return 0;
+        if(board[move.iDest-1][move.jDest-2]==WHITE_KNIGHT)
+            return 0;
+        if(board[move.iDest-1][move.jDest+2]==WHITE_KNIGHT)
+            return 0;
+        if(board[move.iDest+1][move.jDest-2]==WHITE_KNIGHT)
+            return 0;
+        if(board[move.iDest+1][move.jDest+2]==WHITE_KNIGHT)
+            return 0;
+    }
+    return 1;
+}
+
+int isValidCheck(char board[][SIZE],Move move)
+{
+    if(move.isCheck || move.isMate)
+    {
+        //אם כן ואין ואיום איום על המלך היריב אז טעות
+        if(isEnemyKingSafe(board,move.isWhite) == 1)
+            return 0;
+    } else{
+        if(isEnemyKingSafe(board,move.isWhite) == 0)
+            return 0;
+    }
+    return 1;
+}
+
+//void backupBoard(char board[][SIZE],Move storage)
+//{
+//
+//}
+
+void updateBoard(char board[][SIZE],Move storage)
 {
     //clean src location
-    board[move.iSrc][move.jSrc] = EMPTY;
+    board[storage.iSrc][storage.jSrc] = EMPTY;
 
     //update dest location
     char player;
 
-    if(!move.isWhite)
-        board[move.iDest][move.jDest] = capitalToLower(move.player);
+    if(!storage.isWhite)
+        board[storage.iDest][storage.jDest] = capitalToLower(storage.player);
     else
-        board[move.iDest][move.jDest] = move.player;
+        board[storage.iDest][storage.jDest] = storage.player;
 
 }
 
 int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn) {
     Move move;
+    Move storage;
     move.hasSrcCol = 0;
     move.hasSrcRow = 0;
     move.player = whichPlayer(pgn);
@@ -1519,20 +2111,72 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn) {
         move.iSrc = changeCharToIndex(move.srcRow);
     }
 
-    if (isValidMove(board, move) == 0)
+    if (isValidMove(board,move) == 0)
         return 0;
 
     if (move.isPromotion)
     {
-        if(isValidMove(board,move))
-        {
+//        if(isValidMove(board,move))
+//        {
             move.player = move.promotionChange;
+//        }
+    }
+
+
+
+    storage.iDest = move.iDest;
+    storage.jDest = move.jDest;
+    storage.iSrc = move.iSrc;
+    storage.jSrc = move.jSrc;
+    storage.player = move.player;
+    storage.isWhite = move.isWhite;
+    storage.isPromotion = move.isPromotion;
+    storage.promotionChange = move.promotionChange;
+
+//    if(move.isCheck)
+//    {
+//        if(isKingSafe(board,move) == 0)
+//            return 0;
+//    }
+//    else if(move.isMate)
+//    {
+//        if(isKingSafe(board,move)==1)
+//            updateBoard(board,storage);
+//    }
+
+//    if(isKingSafe2(board,move) == 0)
+//        return 0;
+
+    char board2[SIZE][SIZE];
+    for (int i = 0; i < SIZE ; ++i)
+    {
+        for (int j = 0; j < SIZE; ++j)
+        {
+            board2[i][j] = board[i][j];
         }
     }
 
-    updateBoard(board,move);
+    updateBoard(board,storage);
+
+    if(isValidCheck(board,move) == 0)
+    {
+        for (int i = 0; i < SIZE ; ++i)
+        {
+            for (int j = 0; j < SIZE; ++j)
+            {
+                board[i][j] = board2[i][j];
+            }
+        }
+        return  0;
+    }
+
+
+
+
     return 1;
 }
+
+
 
 //void printBoardFromFEN(char fen[]){}
 
