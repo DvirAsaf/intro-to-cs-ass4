@@ -57,14 +57,10 @@ typedef struct {
 
 typedef struct
 {
-    int startCol;
-    int startRow;
-    int endCol;
-    int endRow;
+    int col;
+    int row;
     char player;
-    char isWin;
-
-}piece;
+}Check;
 
 int isDigit(char digit)
 {
@@ -616,6 +612,35 @@ int checkValidCapture(char board[][SIZE],Move move)
     }
 }
 
+//int checkValidCheck(char board[][SIZE],Move move,Check check)
+//{
+//   if(move.isCheck == 0)
+//       return 0;
+//   else
+//       if(move.isWhite)
+//       {
+//           for (int i = 0 ; i < SIZE ; i++)
+//           {
+//               for (int j = 0 ; j < SIZE ; j++)
+//               {
+//                   if(board[i][j] == WHITE_KING)
+//                   {
+//                       check.col = j;
+//                       check.row = i;
+//                       check.player = WHITE_KING;
+//                       break;
+//                   }
+//               }
+//           }
+//           //  מחפש איומים באותה שורה לצד ימין
+//           for (int k = check.row ; k < SIZE ; k++)
+//           {
+//             if(board[check.row][k] == BLACK_QUEEN || board[check.row][k] == BLACK_ROOK )
+//
+//           }
+//       }
+//}
+
 int isLastRow(char board[][SIZE],Move move)
 {
     if((move.isWhite && move.iSrc==1) || (!(move.isWhite) && move.iSrc==SIZE-2))
@@ -894,7 +919,9 @@ int isValidMove(char board[][SIZE], Move move)
     if(checkValidCapture(board,move) == 0)
         return 0;
 
-    //TODO: Add check for shach and mat
+//    //TODO: Add check for shach and mat
+//    if(checkValidCheck(board,move) == 0)
+//        return 0;
 
 
 
@@ -1148,6 +1175,7 @@ Location searchBishop(char board[][SIZE],Move move,char player)
         {
             loc.col = j;
             loc.row = i;
+            loc.isValid = 1;
             flag = 1;
         }
         if(board[i][j] != EMPTY)
@@ -1166,6 +1194,7 @@ Location searchBishop(char board[][SIZE],Move move,char player)
             {
                 loc.col = j;
                 loc.row = i;
+                loc.isValid = 1;
                 flag = 1;
             }
             if(board[i][j] != EMPTY)
@@ -1185,6 +1214,7 @@ Location searchBishop(char board[][SIZE],Move move,char player)
             {
                 loc.col = j;
                 loc.row = i;
+                loc.isValid = 1;
                 flag = 1;
             }
             if(board[i][j] != EMPTY)
@@ -1204,6 +1234,7 @@ Location searchBishop(char board[][SIZE],Move move,char player)
             {
                 loc.col = j;
                 loc.row = i;
+                loc.isValid = 1;
             }
             if(board[i][j] != EMPTY)
                 break;
@@ -1222,6 +1253,7 @@ Location searchKnight(char board[][SIZE],Move move)
         playerColor = BLACK_KNIGHT;
     Location loc;
     int flag = 0;
+    loc.isValid = 0;
     int i = move.iDest,j=move.jDest;
 
     //2 steps row one col
@@ -1231,6 +1263,7 @@ Location searchKnight(char board[][SIZE],Move move)
         {
             loc.row = i-2;
             loc.col = j-1;
+            loc.isValid = 1;
             flag=1;
         }
     }
@@ -1242,6 +1275,7 @@ Location searchKnight(char board[][SIZE],Move move)
             {
                 loc.row = i-2;
                 loc.col = j+1;
+                loc.isValid = 1;
                 flag=1;
             }
         }
@@ -1254,6 +1288,7 @@ Location searchKnight(char board[][SIZE],Move move)
             {
                 loc.row = i+2;
                 loc.col = j+1;
+                loc.isValid = 1;
                 flag=1;
             }
         }
@@ -1266,6 +1301,7 @@ Location searchKnight(char board[][SIZE],Move move)
             {
                 loc.row = i+2;
                 loc.col = j-1;
+                loc.isValid = 1;
                 flag=1;
             }
         }
@@ -1280,6 +1316,7 @@ Location searchKnight(char board[][SIZE],Move move)
             {
                 loc.row = i+1;
                 loc.col = j-2;
+                loc.isValid = 1;
                 flag=1;
             }
         }
@@ -1293,6 +1330,7 @@ Location searchKnight(char board[][SIZE],Move move)
             {
                 loc.row = i+1;
                 loc.col = j+2;
+                loc.isValid = 1;
                 flag=1;
             }
         }
@@ -1306,6 +1344,7 @@ Location searchKnight(char board[][SIZE],Move move)
             {
                 loc.row = i-1;
                 loc.col = j-2;
+                loc.isValid = 1;
                 flag=1;
             }
         }
@@ -1319,6 +1358,7 @@ Location searchKnight(char board[][SIZE],Move move)
             {
                 loc.row = i-1;
                 loc.col = j+2;
+                loc.isValid = 1;
             }
         }
     }
