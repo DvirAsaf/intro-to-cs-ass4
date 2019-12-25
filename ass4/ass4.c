@@ -1006,7 +1006,7 @@ Location searchRook(char board[][SIZE],Move move,char player)
     {
         move.jSrc = changeCharToIndex(move.srcCol);
         //טור מהיעד כלפי מעלה
-        for (int i = move.jSrc ; i >= 0 ; i--)//HERE we should find it
+        for (int i = move.iDest -1 ; i >= 0 ; i--)//HERE we should find it
         {
             if(board[i][move.jSrc] == player)
             {
@@ -1016,11 +1016,11 @@ Location searchRook(char board[][SIZE],Move move,char player)
 //                break;
                 return loc;
             }
-//            if(board[i][move.jSrc] != EMPTY)
-//                break;
+            if(board[i][move.jSrc] != EMPTY)
+                break;
         }
         //טור מהיעד כלפי מטה
-        for (int i = move.jSrc; i < SIZE; i++)
+        for (int i = move.iDest; i < SIZE; i++)
         {
             if(board[i][move.jSrc] == player)
             {
@@ -1030,15 +1030,15 @@ Location searchRook(char board[][SIZE],Move move,char player)
 //                break;
                 return loc;
             }
-//            if(board[i][move.jSrc]!=EMPTY)
-//                break;
+            if(board[i][move.jSrc]!=EMPTY)
+                break;
         }
     }
     else if (move.hasSrcRow)
     {
         move.iSrc = changeCharToIndex(move.srcRow);
         //שורה מהיעד כלפי ימינה
-        for (int j = move.iSrc; j < SIZE; j++)
+        for (int j = move.jDest+1; j < SIZE; j++)
         {
             if(board[move.iSrc][j] == player)
             {
@@ -1049,11 +1049,11 @@ Location searchRook(char board[][SIZE],Move move,char player)
                 //break;
                 return loc;
             }
-//            if(board[move.iSrc][j] != EMPTY)
-//                break;
+            if(board[move.iSrc][j] != EMPTY)
+                break;
         }
         //שורה מהיעד כלפי שמאלה
-        for (int j = move.iSrc; j >= 0; j--)
+        for (int j = move.jDest-1; j >= 0; j--)
         {
             if(board[move.iSrc][j] == player)
             {
@@ -1064,8 +1064,8 @@ Location searchRook(char board[][SIZE],Move move,char player)
 //            break;
                 return loc;
             }
-//            if(board[move.iSrc][j] != EMPTY)
-//                break;
+            if(board[move.iSrc][j] != EMPTY)
+                break;
         }
     }
     else
@@ -1081,8 +1081,8 @@ Location searchRook(char board[][SIZE],Move move,char player)
 //                break;
                 return loc;
             }
-//            if(board[i][move.jDest] != EMPTY)
-//                break;
+            if(board[i][move.jDest] != EMPTY)
+                break;
         }
         //טור מהיעד כלפי מטה
         for (int i = move.iDest+1; i < SIZE; i++)
@@ -1095,8 +1095,8 @@ Location searchRook(char board[][SIZE],Move move,char player)
 //                break;
                 return loc;
             }
-//            if(board[i][move.jDest]!=EMPTY)
-//                break;
+            if(board[i][move.jDest]!=EMPTY)
+                break;
         }
         //שורה מהיעד כלפי שמאלה
         for (int j = move.jDest-1; j >= 0; j--)
@@ -1110,8 +1110,8 @@ Location searchRook(char board[][SIZE],Move move,char player)
 //            break;
                 return loc;
             }
-//            if(board[move.iDest][j] != EMPTY)
-//                break;
+            if(board[move.iDest][j] != EMPTY)
+                break;
         }
 //שורה מהיעד כלפי ימינה
         for (int j = move.jDest+1; j < SIZE; j++)
@@ -1125,8 +1125,8 @@ Location searchRook(char board[][SIZE],Move move,char player)
                 //break;
                 return loc;
             }
-//            if(board[move.iDest][j] != EMPTY)
-//                break;
+            if(board[move.iDest][j] != EMPTY)
+                break;
         }
     }
     return loc;
@@ -1574,10 +1574,6 @@ int isMove(char board[][SIZE],char piece,Location src, Location dest)
     }
     return 0;
 }
-
-
-
-
 
 
 
