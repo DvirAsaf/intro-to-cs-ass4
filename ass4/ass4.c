@@ -8,9 +8,6 @@
 #include "ass4.h"
 #define SIZE 8
 
-//#define LEFT 'L'
-//#define RIGHT 'RIGHT'
-
 // PGN characters
 const char PAWN = 'P';
 const char ROOK = 'R';
@@ -621,7 +618,7 @@ int checkValidCapture(char board[][SIZE],Move move)
 
 int isLastRow(char board[][SIZE],Move move)
 {
-    if((move.isWhite && move.iSrc==0) || (!move.isWhite && move.iSrc==SIZE-1))
+    if((move.isWhite && move.iSrc==1) || (!(move.isWhite) && move.iSrc==SIZE-2))
         return 1;
     else
         return 0;
@@ -1425,8 +1422,7 @@ void updateBoard(char board[][SIZE],Move move)
 
 }
 
-int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
-{
+int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn) {
     Move move;
     move.hasSrcCol = 0;
     move.hasSrcRow = 0;
@@ -1435,59 +1431,64 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
     move.isCheck = isCheck(pgn);
     move.isCapture = isCapture(pgn);
     move.isPromotion = isPromotion(pgn);
+    move.isWhite = isWhiteTurn;
+
     if(move.isPromotion)
     {
         move.promotionChange = whichPromotion(pgn);
     }
-    move.isWhite = isWhiteTurn;
+
     //if there is a src col set it
-    if(isSrcCol(pgn))
-    {
+    if (isSrcCol(pgn)) {
         move.srcCol = findSrcCol(pgn);
-        move.destCol = findDstCol(pgn,1);
+        move.destCol = findDstCol(pgn, 1);
         move.hasSrcCol = 1;
 
-    } else{
-        move.destCol = findDstCol(pgn,0);
+    } else {
+        move.destCol = findDstCol(pgn, 0);
     }
 
-    if(isSrcRow(pgn))
-    {
+    if (isSrcRow(pgn)) {
         move.srcRow = findSrcRow(pgn);
-        move.destRow = findDstRow(pgn,1);
+        move.destRow = findDstRow(pgn, 1);
         move.hasSrcRow = 1;
-    }else {
-        move.destRow = findDstRow(pgn,0);
+    } else {
+        move.destRow = findDstRow(pgn, 0);
     }
     move.jDest = changeCharToIndex(move.destCol);
     move.iDest = changeCharToIndex(move.destRow);
 
-    if(!move.hasSrcRow || !move.hasSrcCol)
-    {
-        Location loc = searchSrc(board,move);
-        if(loc.isValid == 0)
+    if (!move.hasSrcRow || !move.hasSrcCol) {
+        Location loc = searchSrc(board, move);
+        if (loc.isValid == 0)
             return 0;
-        if(move.hasSrcRow) {
+        if (move.hasSrcRow) {
             move.iSrc = changeCharToIndex(move.srcRow);
             move.jSrc = loc.col;
-        }else if(move.hasSrcCol)
-        {
+        } else if (move.hasSrcCol) {
             move.jSrc = changeCharToIndex(move.srcCol);
             move.iSrc = loc.row;
-        } else{
+        } else {
             move.iSrc = loc.row;
             move.jSrc = loc.col;
         }
-    }
-    else{
+    } else {
         //TODO: אחרי שמוצאים את נקודת המוצא אפשר לעדכן את האינדקסים של המוצא
         //update index values:
         move.jSrc = changeCharToIndex(move.srcCol);
         move.iSrc = changeCharToIndex(move.srcRow);
     }
 
-    if(isValidMove(board,move) == 0)
+    if (isValidMove(board, move) == 0)
         return 0;
+
+    if (move.isPromotion)
+    {
+        if(isValidMove(board,move))
+        {
+            move.player = move.promotionChange;
+        }
+    }
 
     updateBoard(board,move);
     return 1;
@@ -1533,22 +1534,6 @@ int isMove(char board[][SIZE],char piece,Location src, Location dest)
     }
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
