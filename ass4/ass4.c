@@ -550,7 +550,7 @@ int checkValidPawn(char board[][SIZE],Move move)
         return 0;
 
     //double step and not im second row - error!!!
-    if(abs(move.jSrc-move.jDest)==2)
+    if(abs(move.iSrc-move.iDest)==2 )
     {
         // if white double step is allowed only from second row
         if(move.isWhite && move.iSrc != SIZE-2)
@@ -561,7 +561,7 @@ int checkValidPawn(char board[][SIZE],Move move)
     }
 
     //if trying to move more than 2 steps- error!!!
-    if(abs(move.jSrc-move.jDest)>2)
+    if(abs(move.iSrc-move.iDest)>2)
         return 0;
 
     //if white walking not straight - error!!!
@@ -574,6 +574,21 @@ int checkValidPawn(char board[][SIZE],Move move)
         if(!(move.iDest-move.iSrc==1 || move.iDest-move.iSrc==2))
             return 0;
     }
+
+    if(move.isCapture)
+    {
+        if(!(abs(move.iSrc-move.iDest) == abs(move.jSrc-move.jDest)))
+            return 0;
+        if(move.isWhite){
+            if(move.iSrc-move.iDest<0)
+                return 0;
+        }else{
+            if(move.iSrc-move.iDest>0)
+                return 0;
+        }
+    }
+
+
     if(!move.isCapture)
     {
         if( move.jSrc!=move.jDest)
