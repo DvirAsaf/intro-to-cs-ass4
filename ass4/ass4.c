@@ -364,6 +364,7 @@ int checkValidKing(char board[][SIZE],Move move)
 //    return 0;
 //}
 
+
 int checkValidKnight(char board[][SIZE],Move move)
 {
     //if walking more than 2 step in the same row
