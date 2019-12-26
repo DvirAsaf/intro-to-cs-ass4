@@ -546,6 +546,9 @@ int checkValidPawn(char board[][SIZE],Move move)
     if(move.isCapture && move.jSrc == move.jDest)
         return 0;
 
+    if(!move.isCapture && move.jSrc != move.jDest)//לא ראיתי שעשית שאם זה לא קפצור
+        return 0;
+
     //double step and not im second row - error!!!
     if(abs(move.jSrc-move.jDest)==2)
     {
@@ -880,7 +883,10 @@ Location searchBlackPawn(char board[][SIZE],Move move)
     {
         loc.row = move.iDest-1;
         if(board[loc.row][move.jDest-1] == BLACK_PAWN)
+        {
+
             loc.col = move.jDest - 1 ;
+        }
         else
             loc.col = move.jDest + 1;
 
@@ -1103,57 +1109,28 @@ Location searchKing(char board[][SIZE],Move move)
     return loc;
 }
 
-
-
-Location searchBishop(char board[][SIZE],Move move,char player)
-{
+Location searchBishop(char board[][SIZE],Move move,char player) {
     Location loc;
     loc.row = -1;
     loc.col = -1;
     int flag = 0;
-    int j = move.jDest-1;
-    
-    //diagnol line from left corner to right down
-    for (int i = move.iDest - 1; i >=0 ; i--)
-    {
-        if(j<0)
-            break;
-        if(board[i][j] == player)
-        {
-            loc.col = j;
-            loc.row = i;
-            loc.isValid = 1;
-            flag = 1;
-        }
-        if(board[i][j] != EMPTY)
-            break;
-        j--;
-    }
-    if(!flag)
-    {
-        j = move.jDest+1;
-        //diagnol line up and left
-        for (int i = move.iDest + 1; i <SIZE ; i++)
-        {
-            if(j>=SIZE)
-                break;
-            if(board[i][j] == player)
-            {
-                loc.col = j;
-                loc.row = i;
-                loc.isValid = 1;
-                flag = 1;
-            }
-            if(board[i][j] != EMPTY)
-                break;
-            j++;
-        }
-    }
-    if(!flag)
-    {
-        j = move.jDest-1;
-        //diagnol line up and right
-        for (int i = move.iDest + 1; i <SIZE ; i++)
+    int j = move.jDest - 1;
+
+//    if (move.hasSrcCol)
+//    {
+//        move.jSrc = changeCharToIndex(move.srcCol);
+//        int steps = 0;
+//        steps = abs(move.jSrc - move.jDest);
+//        char side;
+//        side = move.jSrc > move.jDest ? 'L' : 'R';
+//        if(side == 'L')
+//            if(board[])
+//    }else if(move.hasSrcRow){
+//
+//    }else
+//    {
+        //diagnol line from left corner to right down
+        for (int i = move.iDest - 1; i >=0 ; i--)
         {
             if(j<0)
                 break;
@@ -1162,32 +1139,126 @@ Location searchBishop(char board[][SIZE],Move move,char player)
                 loc.col = j;
                 loc.row = i;
                 loc.isValid = 1;
+                if(move.hasSrcCol){
+                    int colFound = changeCharToIndex(move.srcCol);
+                    if(loc.col == colFound){
+                        return loc;
+                    }
+                }else if(move.hasSrcRow){
+                    int rowFound = changeCharToIndex(move.srcRow);
+                    if(loc.row == rowFound){
+                        return loc;
+                    }
+                }
+                else
+                    return loc;
                 flag = 1;
             }
             if(board[i][j] != EMPTY)
                 break;
             j--;
         }
-    }
-    if(!flag)
-    {
-        j = move.jDest+1;
-        //diagnol line down and left
-        for (int i = move.iDest - 1; i >= 0 ; i--)
-        {
-            if(j>=SIZE)
-                break;
-            if(board[i][j] == player)
+//        if(!flag)
+//        {
+            j = move.jDest+1;
+            //diagnol line up and left
+            for (int i = move.iDest + 1; i <SIZE ; i++)
             {
-                loc.col = j;
-                loc.row = i;
-                loc.isValid = 1;
+                if(j>=SIZE)
+                    break;
+                if(board[i][j] == player)
+                {
+                    loc.col = j;
+                    loc.row = i;
+                    loc.isValid = 1;
+                    flag = 1;
+                    if(move.hasSrcCol){
+                        int colFound = changeCharToIndex(move.srcCol);
+                        if(loc.col == colFound){
+                            return loc;
+                        }
+                    }else if(move.hasSrcRow){
+                        int rowFound = changeCharToIndex(move.srcRow);
+                        if(loc.row == rowFound){
+                            return loc;
+                        }
+                    }
+                    else
+                        return loc;
+                }
+                if(board[i][j] != EMPTY)
+                    break;
+                j++;
             }
-            if(board[i][j] != EMPTY)
-                break;
-            j++;
-        }
-    }
+//        }
+//        if(!flag)
+//        {
+            j = move.jDest-1;
+            //diagnol line up and right
+            for (int i = move.iDest + 1; i <SIZE ; i++)
+            {
+                if(j<0)
+                    break;
+                if(board[i][j] == player)
+                {
+                    loc.col = j;
+                    loc.row = i;
+                    loc.isValid = 1;
+                    flag = 1;
+                    if(move.hasSrcCol){
+                        int colFound = changeCharToIndex(move.srcCol);
+                        if(loc.col == colFound){
+                            return loc;
+                        }
+                    }else if(move.hasSrcRow){
+                        int rowFound = changeCharToIndex(move.srcRow);
+                        if(loc.row == rowFound){
+                            return loc;
+                        }
+                    }else{
+                        return loc;
+                    }
+
+                }
+                if(board[i][j] != EMPTY)
+                    break;
+                j--;
+            }
+//        }
+//        if(!flag)
+//        {
+            j = move.jDest+1;
+            //diagnol line down and left
+            for (int i = move.iDest - 1; i >= 0 ; i--)
+            {
+                if(j>=SIZE)
+                    break;
+                if(board[i][j] == player)
+                {
+                    loc.col = j;
+                    loc.row = i;
+                    loc.isValid = 1;
+                    if(move.hasSrcCol){
+                        int colFound = changeCharToIndex(move.srcCol);
+                        if(loc.col == colFound){
+                            return loc;
+                        }
+                    }else if(move.hasSrcRow){
+                        int rowFound = changeCharToIndex(move.srcRow);
+                        if(loc.row == rowFound){
+                            return loc;
+                        }
+                    }
+                    else
+                        return loc;
+                }
+                if(board[i][j] != EMPTY)
+                    break;
+                j++;
+            }
+//        }
+//    }
+
     return loc;
 }
 
@@ -1211,11 +1282,24 @@ Location searchKnight(char board[][SIZE],Move move)
             loc.row = i-2;
             loc.col = j-1;
             loc.isValid = 1;
+            if(move.hasSrcCol){
+                int colFound = changeCharToIndex(move.srcCol);
+                if(loc.col == colFound){
+                    return loc;
+                }
+            }else if(move.hasSrcRow){
+                int rowFound = changeCharToIndex(move.srcRow);
+                if(loc.row == rowFound){
+                    return loc;
+                }
+            }else{
+                return loc;
+            }
             flag=1;
         }
     }
-    if(!flag)
-    {
+//    if(!flag)
+//    {
         if(i-2>=0 && j+1<SIZE)
         {
             if(board[i-2][j+1] == playerColor)
@@ -1224,11 +1308,24 @@ Location searchKnight(char board[][SIZE],Move move)
                 loc.col = j+1;
                 loc.isValid = 1;
                 flag=1;
+                if(move.hasSrcCol){
+                    int colFound = changeCharToIndex(move.srcCol);
+                    if(loc.col == colFound){
+                        return loc;
+                    }
+                }else if(move.hasSrcRow){
+                    int rowFound = changeCharToIndex(move.srcRow);
+                    if(loc.row == rowFound){
+                        return loc;
+                    }
+                }else{
+                    return loc;
+                }
             }
         }
-    }
-    if(!flag)
-    {
+//    }
+//    if(!flag)
+//    {
         if(i+2<SIZE && j+1<SIZE)
         {
             if(board[i+2][j+1] == playerColor)
@@ -1237,11 +1334,24 @@ Location searchKnight(char board[][SIZE],Move move)
                 loc.col = j+1;
                 loc.isValid = 1;
                 flag=1;
+                if(move.hasSrcCol){
+                    int colFound = changeCharToIndex(move.srcCol);
+                    if(loc.col == colFound){
+                        return loc;
+                    }
+                }else if(move.hasSrcRow){
+                    int rowFound = changeCharToIndex(move.srcRow);
+                    if(loc.row == rowFound){
+                        return loc;
+                    }
+                }else{
+                    return loc;
+                }
             }
         }
-    }
-    if(!flag)
-    {
+//    }
+//    if(!flag)
+//    {
         if(i+2<SIZE && j-1>=0)
         {
             if(board[i+2][j-1] == playerColor)
@@ -1250,13 +1360,26 @@ Location searchKnight(char board[][SIZE],Move move)
                 loc.col = j-1;
                 loc.isValid = 1;
                 flag=1;
+                if(move.hasSrcCol){
+                    int colFound = changeCharToIndex(move.srcCol);
+                    if(loc.col == colFound){
+                        return loc;
+                    }
+                }else if(move.hasSrcRow){
+                    int rowFound = changeCharToIndex(move.srcRow);
+                    if(loc.row == rowFound){
+                        return loc;
+                    }
+                }else{
+                    return loc;
+                }
             }
         }
-    }
+//    }
 
     //2 steps col one row
-    if(!flag)
-    {
+//    if(!flag)
+//    {
         if(i+1<SIZE && j-2>=0)
         {
             if(board[i+1][j-2] == playerColor)
@@ -1265,12 +1388,25 @@ Location searchKnight(char board[][SIZE],Move move)
                 loc.col = j-2;
                 loc.isValid = 1;
                 flag=1;
+                if(move.hasSrcCol){
+                    int colFound = changeCharToIndex(move.srcCol);
+                    if(loc.col == colFound){
+                        return loc;
+                    }
+                }else if(move.hasSrcRow){
+                    int rowFound = changeCharToIndex(move.srcRow);
+                    if(loc.row == rowFound){
+                        return loc;
+                    }
+                }else{
+                    return loc;
+                }
             }
         }
-    }
+//    }
 
-    if(!flag)
-    {
+//    if(!flag)
+//    {
         if(i+1<SIZE && j+2< SIZE)
         {
             if(board[i+1][j+2] == playerColor)
@@ -1279,12 +1415,25 @@ Location searchKnight(char board[][SIZE],Move move)
                 loc.col = j+2;
                 loc.isValid = 1;
                 flag=1;
+                if(move.hasSrcCol){
+                    int colFound = changeCharToIndex(move.srcCol);
+                    if(loc.col == colFound){
+                        return loc;
+                    }
+                }else if(move.hasSrcRow){
+                    int rowFound = changeCharToIndex(move.srcRow);
+                    if(loc.row == rowFound){
+                        return loc;
+                    }
+                }else{
+                    return loc;
+                }
             }
         }
-    }
+//    }
 
-    if(!flag)
-    {
+//    if(!flag)
+//    {
         if(i-1>=0 && j-2>=0)
         {
             if(board[i-1][j-2] == playerColor)
@@ -1293,12 +1442,25 @@ Location searchKnight(char board[][SIZE],Move move)
                 loc.col = j-2;
                 loc.isValid = 1;
                 flag=1;
+                if(move.hasSrcCol){
+                    int colFound = changeCharToIndex(move.srcCol);
+                    if(loc.col == colFound){
+                        return loc;
+                    }
+                }else if(move.hasSrcRow){
+                    int rowFound = changeCharToIndex(move.srcRow);
+                    if(loc.row == rowFound){
+                        return loc;
+                    }
+                }else{
+                    return loc;
+                }
             }
         }
-    }
+//    }
 
-    if(!flag)
-    {
+//    if(!flag)
+//    {
         if(i-1>=0 && j+2<SIZE)
         {
             if(board[i-1][j+2] == playerColor)
@@ -1306,9 +1468,22 @@ Location searchKnight(char board[][SIZE],Move move)
                 loc.row = i-1;
                 loc.col = j+2;
                 loc.isValid = 1;
+                if(move.hasSrcCol){
+                    int colFound = changeCharToIndex(move.srcCol);
+                    if(loc.col == colFound){
+                        return loc;
+                    }
+                }else if(move.hasSrcRow){
+                    int rowFound = changeCharToIndex(move.srcRow);
+                    if(loc.row == rowFound){
+                        return loc;
+                    }
+                }else{
+                    return loc;
+                }
             }
         }
-    }
+//    }
     return loc;
 }
 
@@ -1382,7 +1557,6 @@ Location searchSrc(char board[][SIZE],Move move)
     }
     return loc;
 }
-
 
 char capitalToLower(char capitalLetter)
 {
@@ -1644,7 +1818,7 @@ int isEnemyKingSafe(char board[][SIZE],int isWhite)
                     moveKing.iSrc = i;
                     moveKing.jSrc = j;
                     moveKing.isCapture = 1;
-                    moveKing.isWhite = 0;
+                    moveKing.isWhite = 1;
                     if(isValidMove(board,moveKing) == 1){
                         //המלך מאויים ולכן אפשר לעצור את הסריקה ולהחזיר אפס
                         return 0;
@@ -2158,6 +2332,7 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn) {
 
     updateBoard(board,storage);
 
+
     if(isValidCheck(board,move) == 0)
     {
         for (int i = 0; i < SIZE ; ++i)
@@ -2169,6 +2344,7 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn) {
         }
         return  0;
     }
+
 
 
 
