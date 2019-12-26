@@ -2210,6 +2210,11 @@ int isKingSafe(char board[][SIZE],Move move)
 
 int isValidCheck(char board[][SIZE],Move move)
 {
+    /*
+     *  in this function, if a check is called and the enemy king is safe it is an error.
+        also, if a check is not called but the enemy king is not safe it is an error.
+        In addition, if at the end of the round the king of my color is not safe it is also an error.
+     */
     if(move.isCheck || move.isMate)
     {
         //אם כן ואין ואיום איום על המלך היריב אז טעות
@@ -2218,7 +2223,10 @@ int isValidCheck(char board[][SIZE],Move move)
     } else{
         if(isEnemyKingSafe(board,move.isWhite) == 0)
             return 0;
+
     }
+    if(isEnemyKingSafe(board,!move.isWhite) == 0)
+        return 0;
     return 1;
 }
 
