@@ -577,7 +577,7 @@ int checkValidPawn(char board[][SIZE],Move move)
 
     if(move.isCapture)
     {
-        if(!(abs(move.iSrc-move.iDest) == abs(move.jSrc-move.jDest)))
+        if(!(abs(move.iSrc-move.iDest)==1 && abs(move.jSrc-move.jDest)==1))
             return 0;
         if(move.isWhite){
             if(move.iSrc-move.iDest<0)
@@ -1144,133 +1144,133 @@ Location searchBishop(char board[][SIZE],Move move,char player) {
 //
 //    }else
 //    {
-        //diagnol line from left corner to right down
-        for (int i = move.iDest - 1; i >=0 ; i--)
+    //diagnol line from left corner to right down
+    for (int i = move.iDest - 1; i >=0 ; i--)
+    {
+        if(j<0)
+            break;
+        if(board[i][j] == player)
         {
-            if(j<0)
-                break;
-            if(board[i][j] == player)
-            {
-                loc.col = j;
-                loc.row = i;
-                loc.isValid = 1;
-                if(move.hasSrcCol){
-                    int colFound = changeCharToIndex(move.srcCol);
-                    if(loc.col == colFound){
-                        return loc;
-                    }
-                }else if(move.hasSrcRow){
-                    int rowFound = changeCharToIndex(move.srcRow);
-                    if(loc.row == rowFound){
-                        return loc;
-                    }
-                }
-                else
+            loc.col = j;
+            loc.row = i;
+            loc.isValid = 1;
+            if(move.hasSrcCol){
+                int colFound = changeCharToIndex(move.srcCol);
+                if(loc.col == colFound){
                     return loc;
-                flag = 1;
+                }
+            }else if(move.hasSrcRow){
+                int rowFound = changeCharToIndex(move.srcRow);
+                if(loc.row == rowFound){
+                    return loc;
+                }
             }
-            if(board[i][j] != EMPTY)
-                break;
-            j--;
+            else
+                return loc;
+            flag = 1;
         }
+        if(board[i][j] != EMPTY)
+            break;
+        j--;
+    }
 //        if(!flag)
 //        {
-            j = move.jDest+1;
-            //diagnol line up and left
-            for (int i = move.iDest + 1; i <SIZE ; i++)
-            {
-                if(j>=SIZE)
-                    break;
-                if(board[i][j] == player)
-                {
-                    loc.col = j;
-                    loc.row = i;
-                    loc.isValid = 1;
-                    flag = 1;
-                    if(move.hasSrcCol){
-                        int colFound = changeCharToIndex(move.srcCol);
-                        if(loc.col == colFound){
-                            return loc;
-                        }
-                    }else if(move.hasSrcRow){
-                        int rowFound = changeCharToIndex(move.srcRow);
-                        if(loc.row == rowFound){
-                            return loc;
-                        }
-                    }
-                    else
-                        return loc;
+    j = move.jDest+1;
+    //diagnol line up and left
+    for (int i = move.iDest + 1; i <SIZE ; i++)
+    {
+        if(j>=SIZE)
+            break;
+        if(board[i][j] == player)
+        {
+            loc.col = j;
+            loc.row = i;
+            loc.isValid = 1;
+            flag = 1;
+            if(move.hasSrcCol){
+                int colFound = changeCharToIndex(move.srcCol);
+                if(loc.col == colFound){
+                    return loc;
                 }
-                if(board[i][j] != EMPTY)
-                    break;
-                j++;
+            }else if(move.hasSrcRow){
+                int rowFound = changeCharToIndex(move.srcRow);
+                if(loc.row == rowFound){
+                    return loc;
+                }
             }
+            else
+                return loc;
+        }
+        if(board[i][j] != EMPTY)
+            break;
+        j++;
+    }
 //        }
 //        if(!flag)
 //        {
-            j = move.jDest-1;
-            //diagnol line up and right
-            for (int i = move.iDest + 1; i <SIZE ; i++)
-            {
-                if(j<0)
-                    break;
-                if(board[i][j] == player)
-                {
-                    loc.col = j;
-                    loc.row = i;
-                    loc.isValid = 1;
-                    flag = 1;
-                    if(move.hasSrcCol){
-                        int colFound = changeCharToIndex(move.srcCol);
-                        if(loc.col == colFound){
-                            return loc;
-                        }
-                    }else if(move.hasSrcRow){
-                        int rowFound = changeCharToIndex(move.srcRow);
-                        if(loc.row == rowFound){
-                            return loc;
-                        }
-                    }else{
-                        return loc;
-                    }
+    j = move.jDest-1;
+    //diagnol line up and right
+    for (int i = move.iDest + 1; i <SIZE ; i++)
+    {
+        if(j<0)
+            break;
+        if(board[i][j] == player)
+        {
+            loc.col = j;
+            loc.row = i;
+            loc.isValid = 1;
+            flag = 1;
+            if(move.hasSrcCol){
+                int colFound = changeCharToIndex(move.srcCol);
+                if(loc.col == colFound){
+                    return loc;
+                }
+            }else if(move.hasSrcRow){
+                int rowFound = changeCharToIndex(move.srcRow);
+                if(loc.row == rowFound){
+                    return loc;
+                }
+            }else{
+                return loc;
+            }
 
-                }
-                if(board[i][j] != EMPTY)
-                    break;
-                j--;
-            }
+        }
+        if(board[i][j] != EMPTY)
+            break;
+        j--;
+    }
 //        }
 //        if(!flag)
 //        {
-            j = move.jDest+1;
-            //diagnol line down and left
-            for (int i = move.iDest - 1; i >= 0 ; i--)
-            {
-                if(j>=SIZE)
-                    break;
-                if(board[i][j] == player)
-                {
-                    loc.col = j;
-                    loc.row = i;
-                    loc.isValid = 1;
-                    if(move.hasSrcCol){
-                        int colFound = changeCharToIndex(move.srcCol);
-                        if(loc.col == colFound){
-                            return loc;
-                        }
-                    }else if(move.hasSrcRow){
-                        int rowFound = changeCharToIndex(move.srcRow);
-                        if(loc.row == rowFound){
-                            return loc;
-                        }
-                    }
-                    else
-                        return loc;
+    j = move.jDest+1;
+    //diagnol line down and left
+    for (int i = move.iDest - 1; i >= 0 ; i--)
+    {
+        if(j>=SIZE)
+            break;
+        if(board[i][j] == player)
+        {
+            loc.col = j;
+            loc.row = i;
+            loc.isValid = 1;
+            if(move.hasSrcCol){
+                int colFound = changeCharToIndex(move.srcCol);
+                if(loc.col == colFound){
+                    return loc;
                 }
-                if(board[i][j] != EMPTY)
-                    break;
-                j++;
+            }else if(move.hasSrcRow){
+                int rowFound = changeCharToIndex(move.srcRow);
+                if(loc.row == rowFound){
+                    return loc;
+                }
             }
+            else
+                return loc;
+        }
+        if(board[i][j] != EMPTY)
+            break;
+        j++;
+    }
 //        }
 //    }
 
@@ -1315,189 +1315,189 @@ Location searchKnight(char board[][SIZE],Move move)
     }
 //    if(!flag)
 //    {
-        if(i-2>=0 && j+1<SIZE)
+    if(i-2>=0 && j+1<SIZE)
+    {
+        if(board[i-2][j+1] == playerColor)
         {
-            if(board[i-2][j+1] == playerColor)
-            {
-                loc.row = i-2;
-                loc.col = j+1;
-                loc.isValid = 1;
-                flag=1;
-                if(move.hasSrcCol){
-                    int colFound = changeCharToIndex(move.srcCol);
-                    if(loc.col == colFound){
-                        return loc;
-                    }
-                }else if(move.hasSrcRow){
-                    int rowFound = changeCharToIndex(move.srcRow);
-                    if(loc.row == rowFound){
-                        return loc;
-                    }
-                }else{
+            loc.row = i-2;
+            loc.col = j+1;
+            loc.isValid = 1;
+            flag=1;
+            if(move.hasSrcCol){
+                int colFound = changeCharToIndex(move.srcCol);
+                if(loc.col == colFound){
                     return loc;
                 }
+            }else if(move.hasSrcRow){
+                int rowFound = changeCharToIndex(move.srcRow);
+                if(loc.row == rowFound){
+                    return loc;
+                }
+            }else{
+                return loc;
             }
         }
+    }
 //    }
 //    if(!flag)
 //    {
-        if(i+2<SIZE && j+1<SIZE)
+    if(i+2<SIZE && j+1<SIZE)
+    {
+        if(board[i+2][j+1] == playerColor)
         {
-            if(board[i+2][j+1] == playerColor)
-            {
-                loc.row = i+2;
-                loc.col = j+1;
-                loc.isValid = 1;
-                flag=1;
-                if(move.hasSrcCol){
-                    int colFound = changeCharToIndex(move.srcCol);
-                    if(loc.col == colFound){
-                        return loc;
-                    }
-                }else if(move.hasSrcRow){
-                    int rowFound = changeCharToIndex(move.srcRow);
-                    if(loc.row == rowFound){
-                        return loc;
-                    }
-                }else{
+            loc.row = i+2;
+            loc.col = j+1;
+            loc.isValid = 1;
+            flag=1;
+            if(move.hasSrcCol){
+                int colFound = changeCharToIndex(move.srcCol);
+                if(loc.col == colFound){
                     return loc;
                 }
+            }else if(move.hasSrcRow){
+                int rowFound = changeCharToIndex(move.srcRow);
+                if(loc.row == rowFound){
+                    return loc;
+                }
+            }else{
+                return loc;
             }
         }
+    }
 //    }
 //    if(!flag)
 //    {
-        if(i+2<SIZE && j-1>=0)
+    if(i+2<SIZE && j-1>=0)
+    {
+        if(board[i+2][j-1] == playerColor)
         {
-            if(board[i+2][j-1] == playerColor)
-            {
-                loc.row = i+2;
-                loc.col = j-1;
-                loc.isValid = 1;
-                flag=1;
-                if(move.hasSrcCol){
-                    int colFound = changeCharToIndex(move.srcCol);
-                    if(loc.col == colFound){
-                        return loc;
-                    }
-                }else if(move.hasSrcRow){
-                    int rowFound = changeCharToIndex(move.srcRow);
-                    if(loc.row == rowFound){
-                        return loc;
-                    }
-                }else{
+            loc.row = i+2;
+            loc.col = j-1;
+            loc.isValid = 1;
+            flag=1;
+            if(move.hasSrcCol){
+                int colFound = changeCharToIndex(move.srcCol);
+                if(loc.col == colFound){
                     return loc;
                 }
+            }else if(move.hasSrcRow){
+                int rowFound = changeCharToIndex(move.srcRow);
+                if(loc.row == rowFound){
+                    return loc;
+                }
+            }else{
+                return loc;
             }
         }
+    }
 //    }
 
     //2 steps col one row
 //    if(!flag)
 //    {
-        if(i+1<SIZE && j-2>=0)
+    if(i+1<SIZE && j-2>=0)
+    {
+        if(board[i+1][j-2] == playerColor)
         {
-            if(board[i+1][j-2] == playerColor)
-            {
-                loc.row = i+1;
-                loc.col = j-2;
-                loc.isValid = 1;
-                flag=1;
-                if(move.hasSrcCol){
-                    int colFound = changeCharToIndex(move.srcCol);
-                    if(loc.col == colFound){
-                        return loc;
-                    }
-                }else if(move.hasSrcRow){
-                    int rowFound = changeCharToIndex(move.srcRow);
-                    if(loc.row == rowFound){
-                        return loc;
-                    }
-                }else{
+            loc.row = i+1;
+            loc.col = j-2;
+            loc.isValid = 1;
+            flag=1;
+            if(move.hasSrcCol){
+                int colFound = changeCharToIndex(move.srcCol);
+                if(loc.col == colFound){
                     return loc;
                 }
+            }else if(move.hasSrcRow){
+                int rowFound = changeCharToIndex(move.srcRow);
+                if(loc.row == rowFound){
+                    return loc;
+                }
+            }else{
+                return loc;
             }
         }
+    }
 //    }
 
 //    if(!flag)
 //    {
-        if(i+1<SIZE && j+2< SIZE)
+    if(i+1<SIZE && j+2< SIZE)
+    {
+        if(board[i+1][j+2] == playerColor)
         {
-            if(board[i+1][j+2] == playerColor)
-            {
-                loc.row = i+1;
-                loc.col = j+2;
-                loc.isValid = 1;
-                flag=1;
-                if(move.hasSrcCol){
-                    int colFound = changeCharToIndex(move.srcCol);
-                    if(loc.col == colFound){
-                        return loc;
-                    }
-                }else if(move.hasSrcRow){
-                    int rowFound = changeCharToIndex(move.srcRow);
-                    if(loc.row == rowFound){
-                        return loc;
-                    }
-                }else{
+            loc.row = i+1;
+            loc.col = j+2;
+            loc.isValid = 1;
+            flag=1;
+            if(move.hasSrcCol){
+                int colFound = changeCharToIndex(move.srcCol);
+                if(loc.col == colFound){
                     return loc;
                 }
+            }else if(move.hasSrcRow){
+                int rowFound = changeCharToIndex(move.srcRow);
+                if(loc.row == rowFound){
+                    return loc;
+                }
+            }else{
+                return loc;
             }
         }
+    }
 //    }
 
 //    if(!flag)
 //    {
-        if(i-1>=0 && j-2>=0)
+    if(i-1>=0 && j-2>=0)
+    {
+        if(board[i-1][j-2] == playerColor)
         {
-            if(board[i-1][j-2] == playerColor)
-            {
-                loc.row = i-1;
-                loc.col = j-2;
-                loc.isValid = 1;
-                flag=1;
-                if(move.hasSrcCol){
-                    int colFound = changeCharToIndex(move.srcCol);
-                    if(loc.col == colFound){
-                        return loc;
-                    }
-                }else if(move.hasSrcRow){
-                    int rowFound = changeCharToIndex(move.srcRow);
-                    if(loc.row == rowFound){
-                        return loc;
-                    }
-                }else{
+            loc.row = i-1;
+            loc.col = j-2;
+            loc.isValid = 1;
+            flag=1;
+            if(move.hasSrcCol){
+                int colFound = changeCharToIndex(move.srcCol);
+                if(loc.col == colFound){
                     return loc;
                 }
+            }else if(move.hasSrcRow){
+                int rowFound = changeCharToIndex(move.srcRow);
+                if(loc.row == rowFound){
+                    return loc;
+                }
+            }else{
+                return loc;
             }
         }
+    }
 //    }
 
 //    if(!flag)
 //    {
-        if(i-1>=0 && j+2<SIZE)
+    if(i-1>=0 && j+2<SIZE)
+    {
+        if(board[i-1][j+2] == playerColor)
         {
-            if(board[i-1][j+2] == playerColor)
-            {
-                loc.row = i-1;
-                loc.col = j+2;
-                loc.isValid = 1;
-                if(move.hasSrcCol){
-                    int colFound = changeCharToIndex(move.srcCol);
-                    if(loc.col == colFound){
-                        return loc;
-                    }
-                }else if(move.hasSrcRow){
-                    int rowFound = changeCharToIndex(move.srcRow);
-                    if(loc.row == rowFound){
-                        return loc;
-                    }
-                }else{
+            loc.row = i-1;
+            loc.col = j+2;
+            loc.isValid = 1;
+            if(move.hasSrcCol){
+                int colFound = changeCharToIndex(move.srcCol);
+                if(loc.col == colFound){
                     return loc;
                 }
+            }else if(move.hasSrcRow){
+                int rowFound = changeCharToIndex(move.srcRow);
+                if(loc.row == rowFound){
+                    return loc;
+                }
+            }else{
+                return loc;
             }
         }
+    }
 //    }
     return loc;
 }
@@ -1829,7 +1829,7 @@ int isEnemyKingSafe(char board[][SIZE],int isWhite)
                 }
 
                 if(player == WHITE_KING || player == WHITE_KNIGHT || player == WHITE_QUEEN || player == WHITE_BISHOP ||
-                player == WHITE_PAWN || player == WHITE_ROOK ){
+                   player == WHITE_PAWN || player == WHITE_ROOK ){
                     moveKing.iSrc = i;
                     moveKing.jSrc = j;
                     moveKing.isCapture = 1;
@@ -2307,7 +2307,7 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn) {
     {
 //        if(isValidMove(board,move))
 //        {
-            move.player = move.promotionChange;
+        move.player = move.promotionChange;
 //        }
     }
 
