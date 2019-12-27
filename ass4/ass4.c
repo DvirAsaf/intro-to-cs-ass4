@@ -659,14 +659,6 @@ void createBoard(char board[][SIZE], char fen[])
         k++;
         cureDigit = fen[k];
     }
-//    for (int i = 0; i < SIZE; ++i) {
-    //print all row
-//        for (int j = 0; j < SIZE; ++j) {
-//            printf("%c",board[i][j]);
-//        }
-//        print enter
-//        printf("\n");
-//    }
 }
 
 /*******************************
@@ -841,7 +833,10 @@ int isMate(char pgn[])
             i++;
             cure = pgn[i];
         }
-        else{return 1;}
+        else
+        {
+            return 1;
+        }
     }
     return 0;
 
@@ -1173,21 +1168,7 @@ Location searchBishop(char board[][SIZE],Move move,char player) {
     loc.col = -1;
     int flag = 0;
     int j = move.jDest - 1;
-
-//    if (move.hasSrcCol)
-//    {
-//        move.jSrc = changeCharToIndex(move.srcCol);
-//        int steps = 0;
-//        steps = abs(move.jSrc - move.jDest);
-//        char side;
-//        side = move.jSrc > move.jDest ? 'L' : 'R';
-//        if(side == 'L')
-//            if(board[])
-//    }else if(move.hasSrcRow){
-//
-//    }else
-//    {
-    //diagnol line from left corner to right down
+    
     for (int i = move.iDest - 1; i >=0 ; i--)
     {
         if(j<0)
@@ -1216,8 +1197,6 @@ Location searchBishop(char board[][SIZE],Move move,char player) {
             break;
         j--;
     }
-//        if(!flag)
-//        {
     j = move.jDest+1;
     //diagnol line up and left
     for (int i = move.iDest + 1; i <SIZE ; i++)
@@ -1248,9 +1227,6 @@ Location searchBishop(char board[][SIZE],Move move,char player) {
             break;
         j++;
     }
-//        }
-//        if(!flag)
-//        {
     j = move.jDest-1;
     //diagnol line up and right
     for (int i = move.iDest + 1; i <SIZE ; i++)
@@ -1282,9 +1258,6 @@ Location searchBishop(char board[][SIZE],Move move,char player) {
             break;
         j--;
     }
-//        }
-//        if(!flag)
-//        {
     j = move.jDest+1;
     //diagnol line down and left
     for (int i = move.iDest - 1; i >= 0 ; i--)
@@ -1314,9 +1287,6 @@ Location searchBishop(char board[][SIZE],Move move,char player) {
             break;
         j++;
     }
-//        }
-//    }
-
     return loc;
 }
 
@@ -1364,8 +1334,6 @@ Location searchKnight(char board[][SIZE],Move move)
             flag=1;
         }
     }
-//    if(!flag)
-//    {
     if(i-2>=0 && j+1<SIZE)
     {
         if(board[i-2][j+1] == playerColor)
@@ -1389,9 +1357,6 @@ Location searchKnight(char board[][SIZE],Move move)
             }
         }
     }
-//    }
-//    if(!flag)
-//    {
     if(i+2<SIZE && j+1<SIZE)
     {
         if(board[i+2][j+1] == playerColor)
@@ -1415,9 +1380,6 @@ Location searchKnight(char board[][SIZE],Move move)
             }
         }
     }
-//    }
-//    if(!flag)
-//    {
     if(i+2<SIZE && j-1>=0)
     {
         if(board[i+2][j-1] == playerColor)
@@ -1441,11 +1403,6 @@ Location searchKnight(char board[][SIZE],Move move)
             }
         }
     }
-//    }
-
-    //2 steps col one row
-//    if(!flag)
-//    {
     if(i+1<SIZE && j-2>=0)
     {
         if(board[i+1][j-2] == playerColor)
@@ -1469,10 +1426,6 @@ Location searchKnight(char board[][SIZE],Move move)
             }
         }
     }
-//    }
-
-//    if(!flag)
-//    {
     if(i+1<SIZE && j+2< SIZE)
     {
         if(board[i+1][j+2] == playerColor)
@@ -1496,10 +1449,6 @@ Location searchKnight(char board[][SIZE],Move move)
             }
         }
     }
-//    }
-
-//    if(!flag)
-//    {
     if(i-1>=0 && j-2>=0)
     {
         if(board[i-1][j-2] == playerColor)
@@ -1523,10 +1472,6 @@ Location searchKnight(char board[][SIZE],Move move)
             }
         }
     }
-//    }
-
-//    if(!flag)
-//    {
     if(i-1>=0 && j+2<SIZE)
     {
         if(board[i-1][j+2] == playerColor)
@@ -1549,7 +1494,6 @@ Location searchKnight(char board[][SIZE],Move move)
             }
         }
     }
-//    }
     return loc;
 }
 
@@ -1950,25 +1894,31 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn) {
     storage.isWhite = move.isWhite;
     storage.isPromotion = move.isPromotion;
     storage.promotionChange = move.promotionChange;
-
-    char board2[SIZE][SIZE];
+    
+    /*
+    *save a backup of the current board before we update it.
+    *the reason for this is we want to perform more checkes on the board after the move,
+    *and if the move is not valid the board needs to remain as is before the move.
+    */
+    char backupBoard[SIZE][SIZE];
     for (int i = 0; i < SIZE ; ++i)
     {
         for (int j = 0; j < SIZE; ++j)
         {
-            board2[i][j] = board[i][j];
+            backupBoard[i][j] = board[i][j];
         }
     }
 
     updateBoard(board,storage);
-
+    
+    //return to the original board before the move took place.
     if(isValidCheck(board,move) == 0)
     {
         for (int i = 0; i < SIZE ; ++i)
         {
             for (int j = 0; j < SIZE; ++j)
             {
-                board[i][j] = board2[i][j];
+                board[i][j] = backupBoard[i][j];
             }
         }
         return  0;
