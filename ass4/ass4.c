@@ -1,3 +1,9 @@
+/******************************************
+ * Dvir Asaf
+ * 313531113
+ * 01
+ * ass4
+ *****************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,16 +16,7 @@
 
 // PGN characters
 const char PAWN = 'P';
-const char ROOK = 'R';
-const char KNIGHT = 'N';
-const char BISHOP = 'B';
-const char QUEEN = 'Q';
-const char KING = 'K';
 const char CAPTURE = 'x';
-const char PROMOTION = '=';
-const char CHECK = '+';
-const char MATE = '#';
-const char FIRST_COL = 'a';
 
 // FEN & Board characters
 const char WHITE_PAWN = 'P';
@@ -35,9 +32,6 @@ const char BLACK_BISHOP = 'b';
 const char BLACK_QUEEN = 'q';
 const char BLACK_KING = 'k';
 
-// FEN separator for strtok()
-const char SEP[] = "/";
-
 // Board characters
 const char EMPTY = ' ';
 
@@ -49,22 +43,33 @@ typedef struct {
     char promotionChange;
     int hasSrcCol,hasSrcRow;
 } Move;
+
 typedef struct {
     int row,col;
     int isValid;
 
 }Location;
 
-typedef struct
-{
-    int col,row;
-    char player;
-}kingSafe;
+/*******************************
+ * Function Name: isDigit.
+ * Input: char digit (valid values 'a'-SIZE in letters and (R,K,Q,N,B) and '1'-SIZE).
+ * Output: int (values are 1 or 0).
+ * Function Operation: the function get char and check if the char is digit.
+ * if is digit the function return 1 else return 0.
+ *****************************/
 
 int isDigit(char digit)
 {
     return ('0' <= digit && digit <= '9');
 }
+
+/*******************************
+ * Function Name: isSrcCol.
+ * Input: char pgn[](valid values (R,K,Q,N,B) and (r,k,q,n,b,x,=.#,+) and '1'-SIZE and 'a'-SIZE in letters.
+ * Output: int (values are 1 or 0).
+ * Function Operation: the function get char pgn from main and check if have 2 small letter in the char pgn.
+ * if is 2 small letter return 1 else return 0.
+ *****************************/
 
 int isSrcCol(char pgn[])
 {
@@ -87,6 +92,14 @@ int isSrcCol(char pgn[])
         return 0;
 }
 
+/*******************************
+ * Function Name: isSrcRow.
+ * Input: char pgn[](valid values (R,K,Q,N,B) and (r,k,q,n,b,x,=.#,+) and '1'-SIZE and 'a'-SIZE in letters.
+ * Output: int (values are 1 or 0).
+ * Function Operation: the function get char pgn from the main check if have 2 digit in the char pgn.
+ * if is 2 digit return 1 else return 0.
+ *****************************/
+
 int isSrcRow(char pgn[])
 {
     int i=0;
@@ -106,6 +119,18 @@ int isSrcRow(char pgn[])
         return 1;
     } else return 0;
 }
+
+/*******************************
+ * Function Name: findDstCol.
+ * Input: char pgn[](valid values (R,K,Q,N,B) and (r,k,q,n,b,x,=.#,+) and '1'-SIZE and 'a'-SIZE in letters.
+ * and int isSrccol (valid values 1 or 0).
+ * Output: char (valid values 'A'-'I')
+ * Function Operation: the function get from function isSrcCol value 1 or 0.
+ * if the value is 1 the function get from char pgn 2 small letters and the function choosing the second letter
+ * and this letter is the destination column. and return the letter in capital letter.
+ * if the value is 0 the function get from the char pgn 1 small letter. this letter is the destination column.
+ * and the function return the letter in capital letter.
+ *****************************/
 
 char findDstCol(char pgn[],int isSrcCol)
 {
@@ -140,6 +165,14 @@ char findDstCol(char pgn[],int isSrcCol)
     return 'y';
 }
 
+/*******************************
+ * Function Name: findSrcRow.
+ * Input: char pgn[](valid values 'a'-SIZE in letters and (R,K,Q,N,B) and '1'-SIZE).
+ * Output: char (valid values '1'-SIZE in capital letters).
+ * Function Operation: the function get from char pgn and check if the char is digit.
+ * if is digit return the char else continue to the next char.
+ *****************************/
+
 char findSrcRow(char pgn[])
 {
     int i=0;
@@ -153,6 +186,16 @@ char findSrcRow(char pgn[])
     //never happens
     return 'y';
 }
+
+/*******************************
+ * Function Name: findDstRow.
+ * Input: char pgn[](valid values 'a'-SIZE in letters and (R,K,Q,N,B) and '1'-SIZE)
+ * and int isSrcRow(valid values 1 or 0).
+ * Output: char(valid values '1'-SIZE).
+ * Function Operation: the finction get fron function isSrcRow value 1 or o. if is 1 the function get from char pgn
+ * 2 digit the second is destination row and the function return char '1'- value of SIZE.
+ * if is 0 the function get from char pgn 1 digit and this is the destination row.
+ *****************************/
 
 char findDstRow(char pgn[],int isSrcRow)
 {
@@ -187,6 +230,14 @@ char findDstRow(char pgn[],int isSrcRow)
     return 'y';
 }
 
+/*******************************
+ * Function Name: changeCharToIndex.
+ * Input: char charToIndex(valid values '1'- SIZE and 'a'-SIZE in letter).
+ * Output: int(valid values 0-(SIZE-1).
+ * Function Operation:the function get char and return the value of the char in the arr.
+ * for example the letter 'a' the function
+ *****************************/
+
 int changeCharToIndex(char charToIndex)
 {
     int res;
@@ -203,12 +254,27 @@ int changeCharToIndex(char charToIndex)
     return res;
 }
 
+/*******************************
+ * Function Name: isEmpty.
+ * Input: char board[][SIZE](valid values 0-SIZE-1)and int row(valid values 0-SIZE-1)and int col(valid values 0-SIZE-1)
+ * Output: int ((valid values 0-1).
+ * Function Operation: the function check if the place in the board is empty. if it is empty return 1 else return 0.
+ *****************************/
+
 int isEmpty(char board[][SIZE],int row, int col){
     if(board[row][col] == EMPTY)
         return 1;
     else
         return 0;
 }
+
+/*******************************
+ * Function Name: checkDifferentColors.
+ * Input: char board[][SIZE](valid values 0-SIZE-1) and struct move.
+ * Output: int (valid values 1 or 0).
+ * Function Operation: the function check if the dest and src player are not the same color.
+ * if is the same color the function return 0. else return 1.
+ *****************************/
 
 int checkDifferentColors(char board[][SIZE],Move move)
 {
@@ -227,143 +293,28 @@ int checkDifferentColors(char board[][SIZE],Move move)
     } else return 1;
 }
 
+/*******************************
+ * Function Name: checkValidKinf.
+ * Input: char board[][SIZE](valid values 0-SIZE-1) and struct move.
+ * Output: int (valid values 1 or 0).
+ * Function Operation: the function check if the move of king is valid according the game rules.
+ *****************************/
+
 int checkValidKing(char board[][SIZE],Move move)
 {
     if(abs(move.iSrc - move.iDest) > 1)
         return 0;
     if(abs(move.jSrc - move.jDest) > 1)
         return 0;
-//    if(abs(move.iSrc - move.iDest)==0)
-//    {
-//        if(!(isEmpty(board,move.iSrc,move.jDest)))
-//            return 0;
-//    }
-//    else if(abs(move.jSrc - move.jDest)==0)
-//    {
-//        if(!(isEmpty(board,move.iDest,move.jSrc)))
-//            return 0;
-//    }
-//    else
-//    {
-//        if(!(isEmpty(board,move.iDest,move.jDest)))
-//            return 0;
-//    }
     return 1;
 }
 
-//int checkValidQueen(char board[][SIZE],Move move) {
-//    int stepsRow = abs(move.jSrc - move.jDest);
-//    int stepsCol = abs(move.iSrc - move.jDest);
-//
-//    if (stepsCol == stepsRow) {
-//        //number of steps that the player move in diagonal line
-//        int steps = abs(move.iSrc - move.iDest);
-//        //if the player do not move in diagonal line
-//        if (abs(move.iSrc - move.iDest) != abs(move.jSrc - move.jDest))
-//            return 0;
-//        // char side that tell me witch side the player move
-//        char side;
-//        side = move.jSrc > move.jDest ? 'L' : 'R';
-//        // char side that tell me witch direction the player move
-//        char direction;
-//        direction = move.iSrc > move.iDest ? 'U' : 'D';
-//        // i == src row and j== src col
-//        int i = move.iSrc;
-//        int j = move.jSrc;
-//        //the player move left and up in diagonal line, and check that of the way is free (empty) if not error!
-//        if (side == 'L' && direction == 'U') {
-//            {
-//                i = i - 1;
-//                j = j - 1;
-//                for (int k = 0; k < steps; ++k) {
-//                    if (!isEmpty(board, i, j))
-//                        return 0;
-//                    i--;
-//                    j--;
-//                }
-//            }
-//        }
-//            //the player move right and up in diagonal line, and check that of the way is free (empty) if not error!
-//        else if (side == 'R' && direction == 'U') {
-//            i = i - 1;
-//            j = j + 1;
-//            for (int k = 0; k < steps; k++) {
-//                if (!isEmpty(board, i, j))
-//                    return 0;
-//                i--;
-//                j++;
-//            }
-//        }
-//            //the player move left and down in diagonal line, and check that of the way is free (empty) if not error!
-//        else if (side == 'L' && direction == 'D') {
-//            {
-//                i = i + 1;
-//                j = j - 1;
-//                for (int k = 0; k < steps; ++k) {
-//                    if (!isEmpty(board, i, j))
-//                        return 0;
-//                    i++;
-//                    j--;
-//                }
-//            }
-//        }
-//            //the player move right and down in diagonal line, and check that of the way is free (empty) if not error!
-//        else if (side == 'R' && direction == 'D') {
-//            i = i + 1;
-//            j = j + 1;
-//            for (int k = 0; k < steps; ++k) {
-//                if (!isEmpty(board, i, j))
-//                    return 0;
-//                i++;
-//                j++;
-//            }
-//        }
-//        return 1;
-//    }//if walking in the same col
-//    else if (stepsCol == 0)
-//    {
-//        //check witch direction the player move U==up and D==down
-//        char result = move.iSrc > move.iDest ? 'U' : 'D';
-//
-//        if (result == 'U') {
-//            //check for the next step if the place is empty
-//            for (int i = move.iSrc - 1; i >= move.iDest; i--) {
-//                if (!(isEmpty(board, i, move.jSrc)))
-//                    return 0;
-//            }
-//        } else {
-//            //check for the next step if the place is empty
-//            for (int i = move.iSrc + 1; i <= move.iDest; i++) {
-//                if (!(isEmpty(board, i, move.jSrc)))
-//                    return 0;
-//            }
-//        }
-//        return 1;
-//    }
-//        //if walking in the same row
-//    else if (stepsRow==0) {
-//        //check witch direction the player move L==left and R== right
-//        char result = move.jSrc > move.jDest ? 'L' : 'R';
-//
-//        if (result == 'L') {
-//            for (int i = move.jSrc - 1; i >= move.jDest; i--) {
-//                if (!(isEmpty(board, move.iSrc, i)))
-//                    return 0;
-//            }
-//        }
-//            //GO RIGHT
-//        else {
-//            //check for the next step if the place is empty
-//            for (int i = move.jSrc + 1; i <= move.jDest; i++) {
-//                if (!(isEmpty(board, move.iSrc, i)))
-//                    return 0;
-//            }
-//
-//        }
-//    }
-//    return 0;
-//}
-
+/*******************************
+ * Function Name: checkValidKnight.
+ * Input: char board[][SIZE](valid values 0-SIZE-1) and struct move.
+ * Output: int (valid values 1 or 0).
+ * Function Operation: the function check if the move of knight is valid according the game rules.
+ *****************************/
 
 int checkValidKnight(char board[][SIZE],Move move)
 {
@@ -394,8 +345,6 @@ int checkValidKnight(char board[][SIZE],Move move)
             return 0;
     }
 
-    //TODO: תבדוק אם אתה מוריד את הבדיקת הבאות אם עדיין הכל נכון
-
     // if walking in the same col and not walking to left or right
     if(abs(move.jSrc - move.jDest) == 0)
         return 0;
@@ -407,6 +356,13 @@ int checkValidKnight(char board[][SIZE],Move move)
     //If we pass all checks it means everything is fine, continue to next checks ...
     return 1;
 }
+
+/*******************************
+ * Function Name: checkValidBishop.
+ * Input: char board[][SIZE](valid values 0-SIZE-1) and struct move.
+ * Output: int (valid values 1 or 0).
+ * Function Operation: the function check if the move of bishop is valid according the game rules.
+ *****************************/
 
 int checkValidBishop(char board[][SIZE],Move move)
 {
@@ -477,6 +433,13 @@ int checkValidBishop(char board[][SIZE],Move move)
     return 1;
 }
 
+/*******************************
+ * Function Name: checkValidRook.
+ * Input: char board[][SIZE](valid values 0-SIZE-1) and struct move.
+ * Output: int (valid values 1 or 0).
+ * Function Operation: the function check if the move of rook is valid according the game rules.
+ *****************************/
+
 int checkValidRook(char board[][SIZE],Move move)
 {
     // if walking not in the same row or the same col
@@ -531,8 +494,13 @@ int checkValidRook(char board[][SIZE],Move move)
     return 1;
 }
 
-//TODO: הפונקצית בדיקה של המלכה שלך לא הייתה נכונה, הבנת נכון את המשמעות של השילוב בין שתי הבדיקות יא גאון, אך מספיק טעות אחת קטנה של אינדקסים ונופלים
-//TODO: הרעיון הוא לבדוק האם אחת מהבדחקות עברה בשלום, אחרת טעות
+/*******************************
+ * Function Name: checkValidQueen
+ * Input: char board[][SIZE](valid values 0-SIZE-1) and struct move.
+ * Output: int (valid values 1 or 0).
+ * Function Operation: the function check if the move of queen is valid according the game rules.
+ *****************************/
+
 int checkValidQueen(char board[][SIZE],Move move)
 {
     if(checkValidBishop(board,move) || checkValidRook(board,move))
@@ -541,13 +509,20 @@ int checkValidQueen(char board[][SIZE],Move move)
         return 0;
 }
 
+/*******************************
+ * Function Name: checkValidPawn.
+ * Input: char board[][SIZE](valid values 0-SIZE-1) and struct move.
+ * Output: int (valid values 1 or 0).
+ * Function Operation: the function check if the move of pown is valid according the game rules.
+ *****************************/
+
 int checkValidPawn(char board[][SIZE],Move move)
 {
     //capture and walking straight - error!!!
     if(move.isCapture && move.jSrc == move.jDest)
         return 0;
 
-    if(!move.isCapture && move.jSrc != move.jDest)//לא ראיתי שעשית שאם זה לא קפצור
+    if(!move.isCapture && move.jSrc != move.jDest)
         return 0;
 
     //double step and not im second row - error!!!
@@ -588,16 +563,21 @@ int checkValidPawn(char board[][SIZE],Move move)
                 return 0;
         }
     }
-
-
     if(!move.isCapture)
     {
         if( move.jSrc!=move.jDest)
             return 0;
     }
-
     return 1;
 }
+
+/*******************************
+ * Function Name: checkValidCapture.
+ * Input: char board[][SIZE](valid values 0-SIZE-1) and struct move.
+ * Output: int (valid values 1 or 0).
+ * Function Operation: the function check if the capture action happening according the game rules.
+ * and if the player declares about it.
+ *****************************/
 
 int checkValidCapture(char board[][SIZE],Move move)
 {
@@ -613,51 +593,23 @@ int checkValidCapture(char board[][SIZE],Move move)
         }
         return 1;
     }
-        //TODO: לא יודעת למה הורדת את זה זה דפק הכל, תתקשר אלי אם אתה לא מבין מה עשינו פהלאביו דובי
     else if(move.isCapture == 0)
     {
         char digit = board[move.iDest][move.jDest];
         //trying to move to place with enemy without saying it is capture - not valid
-//        if((move.isWhite && islower(digit)) || (!move.isWhite && isupper(digit)))
-//            return 0;
         if(digit != EMPTY)
             return 0;
-//        if(checkDifferentColors(board,move) == 1)
-//        {
-//            return 0;//Capture without saying it
-//        }
         return 1;
     }
 }
 
-//int checkValidCheck(char board[][SIZE],Move move,Check check)
-//{
-//   if(move.isCheck == 0)
-//       return 0;
-//   else
-//       if(move.isWhite)
-//       {
-//           for (int i = 0 ; i < SIZE ; i++)
-//           {
-//               for (int j = 0 ; j < SIZE ; j++)
-//               {
-//                   if(board[i][j] == WHITE_KING)
-//                   {
-//                       check.col = j;
-//                       check.row = i;
-//                       check.player = WHITE_KING;
-//                       break;
-//                   }
-//               }
-//           }
-//           //  מחפש איומים באותה שורה לצד ימין
-//           for (int k = check.row ; k < SIZE ; k++)
-//           {
-//             if(board[check.row][k] == BLACK_QUEEN || board[check.row][k] == BLACK_ROOK )
-//
-//           }
-//       }
-//}
+/*******************************
+ * Function Name:isLastRow.
+ * Input: char board[][SIZE](valid values 0-SIZE-1) and struct move.
+ * Output: int (valid values 1 or 0).
+ * Function Operation: the function check if the player is in the last row.
+ * for the white player is in row '1' and for the black player is in 'SIZE'.
+ *****************************/
 
 int isLastRow(char board[][SIZE],Move move)
 {
@@ -666,6 +618,15 @@ int isLastRow(char board[][SIZE],Move move)
     else
         return 0;
 }
+
+/*******************************
+ * Function Name: createBoard.
+ * Input: char board[][SIZE](valid values 0-SIZE-1) and char fen[](valid values '1'-SIZE and(r,k,q,n,b)and (R,K,Q,N,B).
+ * Output: put the correct char on the board.
+ * Function Operation: the function get from the main board 2D and is size. the function get char fen[]
+ * and put on the board the char In the right place. if the function see '\' she go to the next row.
+ * if the function see '\0' she finish.
+ *****************************/
 
 void createBoard(char board[][SIZE], char fen[])
 {
@@ -707,6 +668,14 @@ void createBoard(char board[][SIZE], char fen[])
 //        printf("\n");
 //    }
 }
+
+/*******************************
+ * Function Name: printBoard.
+ * Input: char board[][SIZE](valid values 0-SIZE-1).
+ * Output: print the board.
+ * Function Operation: the function print the board in the correct order and make sure the print is look like
+ * chess board.
+ *****************************/
 
 void printBoard(char board[][SIZE])
 {
@@ -758,6 +727,13 @@ void printBoard(char board[][SIZE])
     printf("| *\n");
 }
 
+/*******************************
+ * Function Name: isCapture
+ * Input: char pgn[](valid values (R,K,Q,N,B) and (r,k,q,n,b,x,=.#,+) and '1'-SIZE and 'a'-SIZE in letters.
+ * Output: int(valid values 1 or 0).
+ * Function Operation: the function search for char 'x' if she find return 1 else return 0.
+ *****************************/
+
 int isCapture(char pgn[])
 {
     int i=0;
@@ -774,6 +750,13 @@ int isCapture(char pgn[])
 
 }
 
+/*******************************
+ * Function Name: isPromotion.
+ * Input: char pgn[](valid values (R,K,Q,N,B) and (r,k,q,n,b,x,=.#,+) and '1'-SIZE and 'a'-SIZE in letters.
+ * Output: int(valid values 1 or 0).
+ * Function Operation: the function search for char '=' if she find return 1 else return 0.
+ *****************************/
+
 int isPromotion(char pgn[])
 {
     int i=0;
@@ -789,6 +772,13 @@ int isPromotion(char pgn[])
     return 0;
 
 }
+
+/*******************************
+ * Function Name: whichPromotion.
+ * Input: char pgn[](valid values (R,K,Q,N,B) and (r,k,q,n,b,x,=.#,+) and '1'-SIZE and 'a'-SIZE in letters.
+ * Output: char(valid values (R,K,Q,N,B) and (r,k,q,n,b).
+ * Function Operation: the function search for char '=' and choose the char after this char. return this char.
+ *****************************/
 
 char whichPromotion(char pgn[])
 {
@@ -810,6 +800,13 @@ char whichPromotion(char pgn[])
     return cure;
 }
 
+/*******************************
+ * Function Name: isCheck.
+ * Input: char pgn[](valid values (R,K,Q,N,B) and (r,k,q,n,b,x,=.#,+) and '1'-SIZE and 'a'-SIZE in letters.
+ * Output: int(valid values 1 or 0).
+ * Function Operation: the function search for char '+' if she find return 1 else return 0.
+ *****************************/
+
 int isCheck(char pgn[])
 {
     int i=0;
@@ -825,6 +822,13 @@ int isCheck(char pgn[])
     return 0;
 
 }
+
+/*******************************
+ * Function Name: isMate.
+ * Input: char pgn[](valid values (R,K,Q,N,B) and (r,k,q,n,b,x,=.#,+) and '1'-SIZE and 'a'-SIZE in letters.
+ * Output: int(valid values 1 or 0).
+ * Function Operation: the function search for char '#' if she find return 1 else return 0.
+ *****************************/
 
 int isMate(char pgn[])
 {
@@ -843,6 +847,14 @@ int isMate(char pgn[])
 
 }
 
+/*******************************
+ * Function Name: whichPlayer.
+ * Input: char pgn[](valid values (R,K,Q,N,B) and (r,k,q,n,b,x,=.#,+) and '1'-SIZE and 'a'-SIZE in letters.
+ * Output: char(valid values (R,K,Q,N,B,P) and (r,k,q,n,b,p).
+ * Function Operation: the function get char pgn[] and coose the first char, if is capital letter, return this letter
+ * else return PAWN.
+ *****************************/
+
 char whichPlayer(char pgn[])
 {
     if(isupper(pgn[0]))
@@ -852,12 +864,20 @@ char whichPlayer(char pgn[])
         return PAWN;
 }
 
+/*******************************
+ * Function Name: findSrcCol.
+ * Input: char pgn[](valid values (R,K,Q,N,B) and (r,k,q,n,b,x,=.#,+) and '1'-SIZE and 'a'-SIZE in letters.
+ * Output: char(valid values 'A'-SIZE in letters.
+ * Function Operation: the function get from char pgn[] chars and search small letters that are not 'x'.
+ * return the letter.
+ *****************************/
+
 char findSrcCol(char pgn[])
 {
     int i=0;
     while (pgn[i] != '\0')
     {
-        if(islower(pgn[i])  && pgn[i] != CAPTURE)
+        if(islower(pgn[i]) && pgn[i] != CAPTURE)
         {
             return pgn[i];
         } else i++;
@@ -866,13 +886,13 @@ char findSrcCol(char pgn[])
     return 'y';
 }
 
-/*
- * the function check that if this is promotion move than it's valid - the player is pawn in
- * last raw.
- * also it checks the case of a pawn that in last row and there is no promotion which is
- * also not valid
- */
-
+/*******************************
+ * Function Name: checkValidPromotion.
+ * Input: char board[][SIZE] (valid values 0-SIZE-1) and struct move.
+ * Output: int(valid values 1 or 2).
+ * Function Operation: the function check that if this is promotion move than it's valid - the player is pawn in
+ * last raw. also it checks the case of a pawn that in last row and there is no promotion which is also not valid.
+ *****************************/
 
 int checkValidPromotion(char board[][SIZE],Move move) {
     if(move.isPromotion == 1){
@@ -890,6 +910,14 @@ int checkValidPromotion(char board[][SIZE],Move move) {
             return 1;
     }
 }
+
+/*******************************
+ * Function Name: searchBlackPawn.
+ * Input: char board[][SIZE] (valid values 0-SIZE-1) and struct move.
+ * Output: struct Location that include row col and is valid(valid values is 0-SIZE-1)
+ * Function Operation: the function search black pawn on the board that the src is not known.
+ * she go to dest and going back by the rules of the game.
+ *****************************/
 
 Location searchBlackPawn(char board[][SIZE],Move move)
 {
@@ -926,11 +954,18 @@ Location searchBlackPawn(char board[][SIZE],Move move)
     return loc;
 }
 
+/*******************************
+ * Function Name: searchWhitePawn.
+ * Input: char board[][SIZE] (valid values 0-SIZE-1) and struct move.
+ * Output: struct Location that include row col and is valid(valid values is 0-SIZE-1)
+ * Function Operation: the function search white pawn on the board that the src is not known.
+ * she go to dest and going back by the rules of the game.
+ *****************************/
+
 Location searchWhitePawn(char board[][SIZE],Move move)
 {
     Location loc;
     loc.isValid = 1;
-    //TODO: הטעות שלנו הייתה פה,שלא אתחלנו את ואליד להיות 1 במקרה שהכל בסדר
     if(move.isCapture)
     {
         loc.row = move.iDest+1;
@@ -963,6 +998,14 @@ Location searchWhitePawn(char board[][SIZE],Move move)
     return loc;
 }
 
+/*******************************
+ * Function Name: searchRook.
+ * Input: char board[][SIZE](valid values 0-SIZE-1)and struct move and char player(valid values black/white rook/queen)
+ * Output: struct Location that include row col and is valid(valid values is 0-SIZE-1)
+ * Function Operation: the function search rook/queen on the board that the src is not known.
+ * she go to dest and going back by the rules of the game.
+ *****************************/
+
 Location searchRook(char board[][SIZE],Move move,char player)
 {
     Location loc;
@@ -971,7 +1014,6 @@ Location searchRook(char board[][SIZE],Move move,char player)
     if(move.hasSrcCol)
     {
         move.jSrc = changeCharToIndex(move.srcCol);
-        //טור מהיעד כלפי מעלה
         for (int i = move.iDest -1 ; i >= 0 ; i--)//HERE we should find it
         {
             if(board[i][move.jSrc] == player)
@@ -979,13 +1021,11 @@ Location searchRook(char board[][SIZE],Move move,char player)
                 loc.row = i;
                 loc.col = move.jSrc;
                 loc.isValid = 1;//we found it
-//                break;
                 return loc;
             }
             if(board[i][move.jSrc] != EMPTY)
                 break;
         }
-        //טור מהיעד כלפי מטה
         for (int i = move.iDest; i < SIZE; i++)
         {
             if(board[i][move.jSrc] == player)
@@ -993,7 +1033,6 @@ Location searchRook(char board[][SIZE],Move move,char player)
                 loc.row = i;
                 loc.col = move.jSrc;
                 loc.isValid = 1;//we found it
-//                break;
                 return loc;
             }
             if(board[i][move.jSrc]!=EMPTY)
@@ -1003,7 +1042,6 @@ Location searchRook(char board[][SIZE],Move move,char player)
     else if (move.hasSrcRow)
     {
         move.iSrc = changeCharToIndex(move.srcRow);
-        //שורה מהיעד כלפי ימינה
         for (int j = move.jDest+1; j < SIZE; j++)
         {
             if(board[move.iSrc][j] == player)
@@ -1012,13 +1050,11 @@ Location searchRook(char board[][SIZE],Move move,char player)
                 loc.row = move.iSrc;
                 flag = 1;
                 loc.isValid = 1;//we found it
-                //break;
                 return loc;
             }
             if(board[move.iSrc][j] != EMPTY)
                 break;
         }
-        //שורה מהיעד כלפי שמאלה
         for (int j = move.jDest-1; j >= 0; j--)
         {
             if(board[move.iSrc][j] == player)
@@ -1027,7 +1063,6 @@ Location searchRook(char board[][SIZE],Move move,char player)
                 loc.row = move.iSrc;
                 flag = 1;
                 loc.isValid = 1;//we found it
-//            break;
                 return loc;
             }
             if(board[move.iSrc][j] != EMPTY)
@@ -1036,7 +1071,6 @@ Location searchRook(char board[][SIZE],Move move,char player)
     }
     else
     {
-        //טור מהיעד כלפי מעלה
         for (int i = move.iDest-1; i >= 0; i--)//HERE we should find it
         {
             if(board[i][move.jDest] == player)
@@ -1044,13 +1078,11 @@ Location searchRook(char board[][SIZE],Move move,char player)
                 loc.row = i;
                 loc.col = move.jDest;
                 loc.isValid = 1;//we found it
-//                break;
                 return loc;
             }
             if(board[i][move.jDest] != EMPTY)
                 break;
         }
-        //טור מהיעד כלפי מטה
         for (int i = move.iDest+1; i < SIZE; i++)
         {
             if(board[i][move.jDest] == player)
@@ -1058,13 +1090,11 @@ Location searchRook(char board[][SIZE],Move move,char player)
                 loc.row = i;
                 loc.col = move.jDest;
                 loc.isValid = 1;//we found it
-//                break;
                 return loc;
             }
             if(board[i][move.jDest]!=EMPTY)
                 break;
         }
-        //שורה מהיעד כלפי שמאלה
         for (int j = move.jDest-1; j >= 0; j--)
         {
             if(board[move.iDest][j] == player)
@@ -1073,13 +1103,11 @@ Location searchRook(char board[][SIZE],Move move,char player)
                 loc.row = move.iDest;
                 flag = 1;
                 loc.isValid = 1;//we found it
-//            break;
                 return loc;
             }
             if(board[move.iDest][j] != EMPTY)
                 break;
         }
-//שורה מהיעד כלפי ימינה
         for (int j = move.jDest+1; j < SIZE; j++)
         {
             if(board[move.iDest][j] == player)
@@ -1088,7 +1116,6 @@ Location searchRook(char board[][SIZE],Move move,char player)
                 loc.row = move.iDest;
                 flag = 1;
                 loc.isValid = 1;//we found it
-                //break;
                 return loc;
             }
             if(board[move.iDest][j] != EMPTY)
@@ -1097,6 +1124,14 @@ Location searchRook(char board[][SIZE],Move move,char player)
     }
     return loc;
 }
+
+/*******************************
+ * Function Name: searchKing.
+ * Input: char board[][SIZE] (valid values 0-SIZE-1) and struct move.
+ * Output: struct Location that include row col and is valid (valid values is 0-SIZE-1).
+ * Function Operation: the function search king on the board that the src is not known.
+ * she go to dest and going back by the rules of the game.
+ *****************************/
 
 Location searchKing(char board[][SIZE],Move move)
 {
@@ -1124,6 +1159,13 @@ Location searchKing(char board[][SIZE],Move move)
     }
     return loc;
 }
+
+/*******************************
+ * Function Name: searchBishop.
+ * Input: char board[][SIZE](valid values 0-SIZE-1)and struct move and char player(valid values black/white rook/queen)
+ * Output: struct Location that include row col and is valid(valid values is 0-SIZE-1)
+ * Function Operation: the function search bishop/queen on the board that the src is not known.
+ *****************************/
 
 Location searchBishop(char board[][SIZE],Move move,char player) {
     Location loc;
@@ -1277,6 +1319,14 @@ Location searchBishop(char board[][SIZE],Move move,char player) {
 
     return loc;
 }
+
+/*******************************
+ * Function Name: searchKnight.
+ * Input: char board[][SIZE] (valid values 0-SIZE-1) and struct move.
+ * Output: struct Location that include row col and is valid(valid values is 0-SIZE-1)
+ * Function Operation: the function search knight on the board that the src is not known.
+ * she go to dest and going back by the rules of the game.
+ *****************************/
 
 Location searchKnight(char board[][SIZE],Move move)
 {
@@ -1503,6 +1553,14 @@ Location searchKnight(char board[][SIZE],Move move)
     return loc;
 }
 
+/*******************************
+ * Function Name: searchQueen.
+ * Input: char board[][SIZE] (valid values 0-SIZE-1) and struct move.
+ * Output: struct Location that include row col and is valid(valid values is 0-SIZE-1)
+ * Function Operation: the function search queen on the board that the src is not known.
+ * she go to dest and going back by the rules of the game.
+ *****************************/
+
 Location searchQueen(char board[][SIZE],Move move)
 {
     char playerColor;
@@ -1521,9 +1579,15 @@ Location searchQueen(char board[][SIZE],Move move)
     return loc;
 }
 
+/*******************************
+ * Function Name: searchSrc.
+ * Input: char board[][SIZE] (valid values 0-SIZE-1) and struct move.
+ * Output: struct Location that include row col and is valid(valid values is 0-SIZE-1)
+ * Function Operation: the function get from the struct which player is play now and search is src location.
+ *****************************/
+
 Location searchSrc(char board[][SIZE],Move move)
 {
-    //TODO: לבדוק מה תשובת המרצה ואם לא חוקי אז תמיד לבדוק שהתו הנבדק אם הוא לא החייל המבוקש שהוא תו ריק לעשות ברייק  ולהמשיך לחפש בכיוונים השונים
     Location loc;
     switch (move.player) {
         case 'P':
@@ -1574,11 +1638,26 @@ Location searchSrc(char board[][SIZE],Move move)
     return loc;
 }
 
+/*******************************
+ * Function Name: capitalToLower.
+ * Input: char capitalLetter(valid values 'a'-'z').
+ * Output: char (valid values 'A'-'Z').
+ * Function Operation: the function get capital letter and switch them to small letters.
+ *****************************/
+
 char capitalToLower(char capitalLetter)
 {
     char lowerLetter = capitalLetter + ('a' - 'A');
     return lowerLetter;
 }
+
+/*******************************
+ * Function Name: isValidMove.
+ * Input: char board[][SIZE] (valid values 0-SIZE-1) and struct move.
+ * Output: int(valid values 1 or 0).
+ * Function Operation: the function check if the move is valid. the function call to others function and check that
+ * everything is valid.
+ *****************************/
 
 int isValidMove(char board[][SIZE],Move move)
 {
@@ -1615,7 +1694,6 @@ int isValidMove(char board[][SIZE],Move move)
         case 'B':
         case 'b':
         {
-            //TODO: נופל פה
             if(checkValidBishop(board,move)==0)
                 return 0;
             break;
@@ -1635,114 +1713,15 @@ int isValidMove(char board[][SIZE],Move move)
     if(checkValidCapture(board,move) == 0)
         return 0;
 
-//    if(isKingSafe2(board,move) == 0)
-////        return 0;
-
-//    //TODO: Add check for shach and mat
-//    if(checkValidCheck(board,move) == 0)
-//        return 0;
-
     return 1;
 }
 
-int isKingSafe2(char board[][SIZE],Move move)
-{
-    Move moveKing;
-    char kingColor;
-    if(move.isWhite)
-        kingColor = WHITE_KING;
-    else
-        kingColor = BLACK_KING;
-    for (int i = 0; i < SIZE; ++i)
-    {
-        for (int j = 0; j < SIZE; ++j)
-        {
-            if(board[i][j] == kingColor)
-            {
-                moveKing.iDest = i;
-                moveKing.jDest = j;
-                break;
-            }
-        }
-    }
-
-    if(move.isWhite)
-    {
-        for (int i = 0; i < SIZE ; ++i)
-        {
-            for (int j = 0; j < SIZE ; ++j)
-            {
-                char player = board[i][j];
-                if(player == WHITE_KING)
-                    continue;
-                if(player == BLACK_KING)
-                {
-                    moveKing.player = BLACK_KING;
-                }else if(player == BLACK_KNIGHT){
-                    moveKing.player = BLACK_KNIGHT;
-                }else if(player == BLACK_QUEEN){
-                    moveKing.player = BLACK_QUEEN;
-                }else if(player == BLACK_BISHOP){
-                    moveKing.player = BLACK_BISHOP;
-                }else if(player == BLACK_PAWN){
-                    moveKing.player = BLACK_PAWN;
-                }else if(player == BLACK_ROOK){
-                    moveKing.player = BLACK_ROOK;
-                }
-
-                moveKing.iSrc = i;
-                moveKing.jSrc = j;
-                moveKing.isCapture = 1;
-                moveKing.isWhite = 0;
-                if(isValidMove(board,moveKing) == 1){
-                    //המלך מאויים ולכן אפשר לעצור את הסריקה ולהחזיר אפס
-                    return 0;
-                }
-            }
-        }
-        return 1;
-    }
-    else{
-
-        for (int i = 0; i < SIZE ; ++i)
-        {
-            for (int j = 0; j < SIZE ; ++j)
-            {
-                char player = board[i][j];
-                if(player == BLACK_KING)
-                    continue;
-                if(player == WHITE_KING)
-                {
-                    moveKing.player = WHITE_KING;
-                }else if(player == WHITE_KNIGHT){
-                    moveKing.player = WHITE_KNIGHT;
-                }else if(player == WHITE_QUEEN){
-                    moveKing.player = WHITE_QUEEN;
-                }else if(player == WHITE_BISHOP){
-                    moveKing.player = WHITE_BISHOP;
-                }else if(player == WHITE_PAWN){
-                    moveKing.player = WHITE_PAWN;
-                }else if(player == WHITE_ROOK){
-                    moveKing.player = WHITE_ROOK;
-                }
-
-                moveKing.iSrc = i;
-                moveKing.jSrc = j;
-                moveKing.isCapture = 1;
-                moveKing.isWhite = 1;
-                if(isValidMove(board,moveKing) == 1){
-                    //המלך מאויים ולכן אפשר לעצור את הסריקה ולהחזיר אפס
-                    return 0;
-                }
-            }
-        }
-        return 1;
-    }
-
-
-
-
-}
+/*******************************
+ * Function Name: isEnemyKingSafe.
+ * Input: char board[][SIZE] (valid values 0-SIZE-1) ans int isWhite(valid values 1 or 0).
+ * Output: int(valid values 1 or 0).
+ * Function Operation: the function check after any play that my king is safe and check if the enemy king is threatened
+ *****************************/
 
 int isEnemyKingSafe(char board[][SIZE],int isWhite)
 {
@@ -1772,8 +1751,6 @@ int isEnemyKingSafe(char board[][SIZE],int isWhite)
             for (int j = 0; j < SIZE ; ++j)
             {
                 char player = board[i][j];
-//                if(player == WHITE_KING)
-//                    continue;
                 if(player == BLACK_KING)
                 {
                     moveKing.player = BLACK_KING;
@@ -1795,25 +1772,21 @@ int isEnemyKingSafe(char board[][SIZE],int isWhite)
                     moveKing.jSrc = j;
                     moveKing.isCapture = 1;
                     moveKing.isWhite = 0;
-                    if(isValidMove(board,moveKing) == 1){
-                        //המלך מאויים ולכן אפשר לעצור את הסריקה ולהחזיר אפס
+                    if(isValidMove(board,moveKing) == 1)
+                    {
                         return 0;
                     }
                 }
-
             }
         }
         return 1;
     }
     else{
-
         for (int i = 0; i < SIZE ; ++i)
         {
             for (int j = 0; j < SIZE ; ++j)
             {
                 char player = board[i][j];
-//                if(player == BLACK_KING)
-//                    continue;
                 if(player == WHITE_KING)
                 {
                     moveKing.player = WHITE_KING;
@@ -1835,390 +1808,30 @@ int isEnemyKingSafe(char board[][SIZE],int isWhite)
                     moveKing.jSrc = j;
                     moveKing.isCapture = 1;
                     moveKing.isWhite = 1;
-                    if(isValidMove(board,moveKing) == 1){
-                        //המלך מאויים ולכן אפשר לעצור את הסריקה ולהחזיר אפס
+                    if(isValidMove(board,moveKing) == 1)
+                    {
                         return 0;
                     }
                 }
-
             }
         }
         return 1;
     }
-
-
-
-
 }
 
-int isKingSafe(char board[][SIZE],Move move)
-{
-    //חיפוש המלך הלבן
-    if(move.isWhite == 1)
-    {
-        for (int i = 0; i < SIZE ; i++)
-        {
-            for (int j = 0 ; j < SIZE ; j++)
-            {
-                if(board[i][j]== WHITE_KING)
-                {
-                    move.iDest = i;
-                    move.jDest = j;
-                    break;
-                }
-            }
-        }
-        //בדיקה שאין מעלי רגלי שיכול לתקוף את המלך והוא משבצת ממנו
-        if(board[move.iDest-1][move.jDest-1]==BLACK_PAWN || board[move.iDest-1][move.jDest+1]==BLACK_PAWN)
-            return 0;
-        // בדיקה שבאותו שורה אין מלכה או צריח לכיוון ימין
-        for (int k = move.jDest+1 ; k < SIZE ; k++)
-        {
-            if(board[move.iDest][k] == BLACK_ROOK || board[move.iDest][k] == BLACK_QUEEN)
-            {
-                if(board[move.iDest][k] == BLACK_ROOK)
-                    move.player = BLACK_ROOK;
-                else move.player = BLACK_QUEEN;
-                move.jSrc = k;
-                move.iSrc = move.iDest;
-                move.isWhite = 0;
-                move.isCapture = 1;
-                if(isValidMove(board,move))
-                    return 0;
-            }
-        }
-        // בדיקה שבאותו שורה אין מלכה או צריח לכיוון שמאל
-        for (int k = move.jDest-1 ; k >= 0 ; k--)
-        {
-            if(board[move.iDest][k] == BLACK_ROOK || board[move.iDest][k] == BLACK_QUEEN)
-            {
-                if(board[move.iDest][k] == BLACK_ROOK)
-                    move.player = BLACK_ROOK;
-                else move.player = BLACK_QUEEN;
-                move.jSrc = k;
-                move.iSrc = move.iDest;
-                move.isWhite = 0;
-                move.isCapture = 1;
-                if(isValidMove(board,move))
-                    return 0;
-            }
-        }
-        // בדיקה שבאותו תור אין מלכה או צריח לכיוון מטה
-        for (int k = move.iDest+1 ; k < SIZE ; k++)
-        {
-            if(board[k][move.jDest] == BLACK_ROOK || board[k][move.jDest] == BLACK_QUEEN)
-            {
-                if(board[k][move.jDest] == BLACK_ROOK)
-                    move.player = BLACK_ROOK;
-                else move.player = BLACK_QUEEN;
-                move.iSrc = k;
-                move.jSrc = move.jDest;
-                move.isWhite = 0;
-                move.isCapture = 1;
-                if(isValidMove(board,move))
-                    return 0;
-            }
-        }
-        // בדיקה שבאותו תור אין מלכה או צריח לכיוון מעלה
-        for (int k = move.iDest-1 ; k >= 0 ; k--)
-        {
-            if(board[k][move.jDest] == BLACK_ROOK || board[k][move.jDest] == BLACK_QUEEN)
-            {
-                if(board[k][move.jDest] == BLACK_ROOK)
-                    move.player = BLACK_ROOK;
-                else move.player = BLACK_QUEEN;
-                move.iSrc = k;
-                move.jSrc = move.jDest;
-                move.isWhite = 0;
-                move.isCapture = 1;
-                if(isValidMove(board,move))
-                    return 0;
-            }
-        }
-        //בדיקה שאין באלכסון לכיון שמאל למעלה כלים עויינים
-        for (int l = move.iDest-1; l >= 0 ; l--)
-        {
-            for (int t = move.jDest-1; t >=0 ; t--)
-            {
-                if(board[l][t] == BLACK_QUEEN || board[l][t] == BLACK_BISHOP)
-                {
-                    if(board[l][t] == BLACK_BISHOP)
-                        move.player = BLACK_BISHOP;
-                    else move.player = BLACK_QUEEN;
-                    move.jSrc = t;
-                    move.iSrc = l;
-                    move.isWhite = 0;
-                    move.isCapture = 1;
-                    if(isValidMove(board,move))
-                        return 0;
-                }
-            }
-        }
-        //בדיקה שאין אלכסון לכיוןן שמאל למעלה כלים עויינים
-        for (int l = move.iDest-1; l >= 0 ; l--)
-        {
-            for (int t = move.jDest+1; t <SIZE ; t++)
-            {
-                if(board[l][t] == BLACK_QUEEN || board[l][t] == BLACK_BISHOP)
-                {
-                    if(board[l][t] == BLACK_BISHOP)
-                        move.player = BLACK_BISHOP;
-                    else move.player = BLACK_QUEEN;
-                    move.jSrc = t;
-                    move.iSrc = l;
-                    move.isWhite = 0;
-                    move.isCapture = 1;
-                    if(isValidMove(board,move))
-                        return 0;
-                }
-            }
-        }
-        //בדיקה שאין באלכסון לכיוון שמאל למטה כלים עוינים
-        for (int l = move.iDest+1; l < SIZE ; l++)
-        {
-            for (int t = move.jDest-1; t >=0 ; t--)
-            {
-                if(board[l][t] == BLACK_QUEEN || board[l][t] == BLACK_BISHOP)
-                {
-                    if(board[l][t] == BLACK_BISHOP)
-                        move.player = BLACK_BISHOP;
-                    else move.player = BLACK_QUEEN;
-                    move.jSrc = t;
-                    move.iSrc = l;
-                    move.isWhite = 0;
-                    move.isCapture = 1;
-                    if(isValidMove(board,move))
-                        return 0;
-                }
-            }
-        }
-        //בדיקה שאין באלכסון לכיון ימין למטה כלים עויינים
-        for (int l = move.iDest-1; l <SIZE ; l++)
-        {
-            for (int t = move.jDest-1; t <SIZE ; t++)
-            {
-                if(board[l][t] == BLACK_QUEEN || board[l][t] == BLACK_BISHOP)
-                {
-                    if(board[l][t] == BLACK_BISHOP)
-                        move.player = BLACK_BISHOP;
-                    else move.player = BLACK_QUEEN;
-                    move.jSrc = t;
-                    move.iSrc = l;
-                    move.isWhite = 0;
-                    move.isCapture = 1;
-                    if(isValidMove(board,move))
-                        return 0;
-                }
-            }
-        }
-        //בדיקה שהפרש לא יכול לתקוף את המלך
-        if(board[move.iDest-2][move.jDest-1]==BLACK_KNIGHT)
-            return 0;
-        if(board[move.iDest-2][move.jDest+1]==BLACK_KNIGHT)
-            return 0;
-        if(board[move.iDest+2][move.jDest-1]==BLACK_KNIGHT)
-            return 0;
-        if(board[move.iDest+2][move.jDest+1]==BLACK_KNIGHT)
-            return 0;
-        if(board[move.iDest-1][move.jDest-2]==BLACK_KNIGHT)
-            return 0;
-        if(board[move.iDest+1][move.jDest-2]==BLACK_KNIGHT)
-            return 0;
-        if(board[move.iDest-1][move.jDest+2]==BLACK_KNIGHT)
-            return 0;
-        if(board[move.iDest+1][move.jDest+2]==BLACK_KNIGHT)
-            return 0;
-    }
-        //חיפוש המלך השחור
-    else if (move.isWhite == 0)
-    {
-        for (int i = 0; i < SIZE ; i++)
-        {
-            for (int j = 0 ; j < SIZE ; j++)
-            {
-                if(board[i][j]== BLACK_KING)
-                {
-                    move.iDest = i;
-                    move.jDest = j;
-                    break;
-                }
-            }
-        }
-        //בדיקה שאין מעלי רגלי שיכול לתקוף את המלך והוא משבצת ממנו
-        if(board[move.iDest+1][move.jDest-1]==WHITE_PAWN || board[move.iDest+1][move.jDest+1]==WHITE_PAWN)
-            return 0;
-
-        // בדיקה שבאותו שורה אין מלכה או צריח לכיוון ימין
-        for (int k = move.jDest+1 ; k < SIZE ; k++)
-        {
-            if(board[move.iDest][k] == WHITE_ROOK || board[move.iDest][k] == WHITE_QUEEN)
-            {
-                if(board[move.iDest][k] == WHITE_ROOK)
-                    move.player = WHITE_ROOK;
-                else move.player = WHITE_QUEEN;
-                move.jSrc = k;
-                move.iSrc = move.iDest;
-                move.isWhite = 1;
-                move.isCapture = 1;
-                if(isValidMove(board,move))
-                    return 0;
-            }
-        }
-        // בדיקה שבאותו שורה אין מלכה או צריח לכיוון שמאל
-        for (int k = move.jDest-1 ; k >= 0 ; k--)
-        {
-            if(board[move.iDest][k] == WHITE_ROOK || board[move.iDest][k] == WHITE_QUEEN)
-            {
-                if(board[move.iDest][k] == WHITE_ROOK)
-                    move.player = WHITE_ROOK;
-                else move.player = WHITE_QUEEN;
-                move.jSrc = k;
-                move.iSrc = move.iDest;
-                move.isWhite = 1;
-                move.isCapture = 1;
-                if(isValidMove(board,move))
-                    return 0;
-            }
-        }
-        // בדיקה שבאותו תור אין מלכה או צריח לכיוון מטה
-        for (int k = move.iDest+1 ; k < SIZE ; k++)
-        {
-            if(board[k][move.jDest] == WHITE_ROOK || board[k][move.jDest] == WHITE_QUEEN)
-            {
-                if(board[k][move.jDest] == WHITE_ROOK)
-                    move.player = WHITE_ROOK;
-                else move.player = WHITE_QUEEN;
-                move.iSrc = k;
-                move.jSrc = move.jDest;
-                move.isWhite = 1;
-                move.isCapture = 1;
-                if(isValidMove(board,move))
-                    return 0;
-            }
-        }
-        // בדיקה שבאותו תור אין מלכה או צריח לכיוון מעלה
-        for (int k = move.iDest-1 ; k >= 0 ; k--)
-        {
-            if(board[k][move.jDest] == WHITE_ROOK || board[k][move.jDest] == WHITE_QUEEN)
-            {
-                if(board[k][move.jDest] == WHITE_ROOK)
-                    move.player = WHITE_ROOK;
-                else move.player = WHITE_QUEEN;
-                move.iSrc = k;
-                move.jSrc = move.jDest;
-                move.isWhite = 1;
-                move.isCapture = 1;
-                if(isValidMove(board,move))
-                    return 0;
-            }
-        }
-        //בדיקה שאין באלכסון לכיון שמאל למעלה כלים עויינים
-        for (int l = move.iDest-1; l >= 0 ; l--)
-        {
-            for (int t = move.jDest-1; t >=0 ; t--)
-            {
-                if(board[l][t] == WHITE_QUEEN || board[l][t] == WHITE_BISHOP)
-                {
-                    if(board[l][t] == WHITE_BISHOP)
-                        move.player = WHITE_BISHOP;
-                    else move.player = WHITE_QUEEN;
-                    move.jSrc = t;
-                    move.iSrc = l;
-                    move.isWhite = 1;
-                    move.isCapture = 1;
-                    if(isValidMove(board,move))
-                        return 0;
-                }
-            }
-        }
-        //בדיקה שאין אלכסון לכיוןן שמאל למעלה כלים עויינים
-        for (int l = move.iDest-1; l >= 0 ; l--)
-        {
-            for (int t = move.jDest+1; t <SIZE ; t++)
-            {
-                if(board[l][t] == WHITE_QUEEN || board[l][t] == WHITE_BISHOP)
-                {
-                    if(board[l][t] == WHITE_BISHOP)
-                        move.player = WHITE_BISHOP;
-                    else move.player = WHITE_QUEEN;
-                    move.jSrc = t;
-                    move.iSrc = l;
-                    move.isWhite = 1;
-                    move.isCapture = 1;
-                    if(isValidMove(board,move))
-                        return 0;
-                }
-            }
-        }
-        //בדיקה שאין באלכסון לכיוון שמאל למטה כלים עוינים
-        for (int l = move.iDest+1; l < SIZE ; l++)
-        {
-            for (int t = move.jDest-1; t >=0 ; t--)
-            {
-                if(board[l][t] == WHITE_QUEEN || board[l][t] == WHITE_BISHOP)
-                {
-                    if(board[l][t] == WHITE_BISHOP)
-                        move.player = WHITE_BISHOP;
-                    else move.player = WHITE_QUEEN;
-                    move.jSrc = t;
-                    move.iSrc = l;
-                    move.isWhite = 1;
-                    move.isCapture = 1;
-                    if(isValidMove(board,move))
-                        return 0;
-                }
-            }
-        }
-        //בדיקה שאין באלכסון לכיון ימין למטה כלים עויינים
-        for (int l = move.iDest-1; l <SIZE ; l++)
-        {
-            for (int t = move.jDest-1; t <SIZE ; t++)
-            {
-                if(board[l][t] == WHITE_QUEEN || board[l][t] == WHITE_BISHOP)
-                {
-                    if(board[l][t] == WHITE_BISHOP)
-                        move.player = WHITE_BISHOP;
-                    else move.player = WHITE_QUEEN;
-                    move.jSrc = t;
-                    move.iSrc = l;
-                    move.isWhite = 1;
-                    move.isCapture = 1;
-                    if(isValidMove(board,move))
-                        return 0;
-                }
-            }
-        }
-        //בדיקה שהפרש לא יכול לתקוף את המלך
-        if(board[move.iDest-2][move.jDest-1]==WHITE_KNIGHT)
-            return 0;
-        if(board[move.iDest-2][move.jDest+1]==WHITE_KNIGHT)
-            return 0;
-        if(board[move.iDest+2][move.jDest-1]==WHITE_KNIGHT)
-            return 0;
-        if(board[move.iDest+2][move.jDest+1]==WHITE_KNIGHT)
-            return 0;
-        if(board[move.iDest-1][move.jDest-2]==WHITE_KNIGHT)
-            return 0;
-        if(board[move.iDest-1][move.jDest+2]==WHITE_KNIGHT)
-            return 0;
-        if(board[move.iDest+1][move.jDest-2]==WHITE_KNIGHT)
-            return 0;
-        if(board[move.iDest+1][move.jDest+2]==WHITE_KNIGHT)
-            return 0;
-    }
-    return 1;
-}
+/*******************************
+ * Function Name: isValidCheck
+ * Input: char board[][SIZE] (valid values 0-SIZE-1) and struct move.
+ * Output: int(valid values 1 or 0).
+ * Function Operation:in this function, if a check is called and the enemy king is safe it is an error.
+ * also, if a check is not called but the enemy king is not safe it is an error.
+ * In addition, if at the end of the round the king of my color is not safe it is also an error.
+ *****************************/
 
 int isValidCheck(char board[][SIZE],Move move)
 {
-    /*
-     *  in this function, if a check is called and the enemy king is safe it is an error.
-        also, if a check is not called but the enemy king is not safe it is an error.
-        In addition, if at the end of the round the king of my color is not safe it is also an error.
-     */
     if(move.isCheck || move.isMate)
     {
-        //אם כן ואין ואיום איום על המלך היריב אז טעות
         if(isEnemyKingSafe(board,move.isWhite) == 1)
             return 0;
     } else{
@@ -2231,10 +1844,13 @@ int isValidCheck(char board[][SIZE],Move move)
     return 1;
 }
 
-//void backupBoard(char board[][SIZE],Move storage)
-//{
-//
-//}
+/*******************************
+ * Function Name: updateBoard.
+ * Input: char board[][SIZE] (valid values 0-SIZE-1) and struct Storage.
+ * Output: put the correct char on the board.
+ * Function Operation: the function get from struct storage the values of the final situation and rearrangement
+ * the board.
+ *****************************/
 
 void updateBoard(char board[][SIZE],Move storage)
 {
@@ -2250,6 +1866,16 @@ void updateBoard(char board[][SIZE],Move storage)
         board[storage.iDest][storage.jDest] = storage.player;
 
 }
+
+/*******************************
+ * Function Name: makeMove.
+ * Input: char board[][SIZE] (valid values 0-SIZE-1) and int isWhiteTurn(valid values 1 or 0) and
+ * char pgn[](valid values (R,K,Q,N,B) and (r,k,q,n,b,x,=.#,+) and '1'-SIZE and 'a'-SIZE in letters.
+ * Output: int(valid values 1 or 0).
+ * Function Operation: The function receives from someone a move, sends the other functions to check
+ * if everything is correct, creates a new board state.
+ * If something goes wrong then returns 0 if everything goes back returns 1
+ *****************************/
 
 int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn) {
     Move move;
@@ -2303,7 +1929,6 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn) {
             move.jSrc = loc.col;
         }
     } else {
-        //TODO: אחרי שמוצאים את נקודת המוצא אפשר לעדכן את האינדקסים של המוצא
         //update index values:
         move.jSrc = changeCharToIndex(move.srcCol);
         move.iSrc = changeCharToIndex(move.srcRow);
@@ -2314,13 +1939,8 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn) {
 
     if (move.isPromotion)
     {
-//        if(isValidMove(board,move))
-//        {
         move.player = move.promotionChange;
-//        }
     }
-
-
 
     storage.iDest = move.iDest;
     storage.jDest = move.jDest;
@@ -2330,20 +1950,6 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn) {
     storage.isWhite = move.isWhite;
     storage.isPromotion = move.isPromotion;
     storage.promotionChange = move.promotionChange;
-
-//    if(move.isCheck)
-//    {
-//        if(isKingSafe(board,move) == 0)
-//            return 0;
-//    }
-//    else if(move.isMate)
-//    {
-//        if(isKingSafe(board,move)==1)
-//            updateBoard(board,storage);
-//    }
-
-//    if(isKingSafe2(board,move) == 0)
-//        return 0;
 
     char board2[SIZE][SIZE];
     for (int i = 0; i < SIZE ; ++i)
@@ -2356,7 +1962,6 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn) {
 
     updateBoard(board,storage);
 
-
     if(isValidCheck(board,move) == 0)
     {
         for (int i = 0; i < SIZE ; ++i)
@@ -2368,119 +1973,5 @@ int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn) {
         }
         return  0;
     }
-
-
-
-
-
     return 1;
 }
-
-
-
-//void printBoardFromFEN(char fen[]){}
-
-int isClear(char board[][SIZE],char piece,Location loc)
-{
-    char target = (board[loc.row][loc.col]);
-    if (target!= EMPTY )
-    {
-        //White piece cant eats friend
-        if(isupper(target)&&isupper(piece))
-        {
-            return 0;
-
-            //Black piece cant eats friend
-        } else if(islower(target)&& islower(piece))
-        {
-            return 0;
-        } else return 2;
-    }
-    return 1;
-}
-int isMove(char board[][SIZE],char piece,Location src, Location dest)
-{
-    if (isClear(board,piece,dest))
-    {
-        if(piece=='P')
-        {
-            if (src.col==dest.col)
-            {
-                if(dest.row-src.row==1)
-                {
-                    return 1;
-                }
-            } else if ((dest.row-src.row==2)&& src.row==1)
-            {
-                return 1;
-            } else return 0;
-        }
-    }
-    return 0;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//int makeMove(char board[][SIZE], char pgn[], int isWhiteTurn)
-//{
-//    char player;
-//    char colDst;
-//    char colSrc;
-//    char rowDst;
-//    char rowSrc;
-//    int i=0;
-//    int numOfDigit = numOfDigit(pgn);
-//    if(numOfDigit == 2){
-//        int foundSrc =0;
-//        if(isupper(pgn[0]))
-//        {
-//            player = pgn[0];
-//            i++;
-//        }else {
-//            player = PAWN;
-//        }
-//
-//        char d = pgn[i];
-//        while (d != '\0'){
-//            if(islower(d) && d!='x'){
-//                if(foundSrc){
-//                    colDst = d;
-//                } else{
-//                    colSrc = d;
-//                    foundSrc = 1; //Set flag to true
-//                }
-//            }else if(d == 'x'){
-//                //capture
-//            }else if(isdigit(d)){
-//                if(foundSrc){
-//                    rowDst = d;
-//                } else{
-//                    rowSrc = d;
-//                }
-//            }
-//        }
-//
-//        //src abd dst
-//    }else{
-//        //dst
-//    }
-//
-////if the move is legal return 1 if not return 0.
-//
-//}
-
-
